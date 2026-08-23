@@ -1,0 +1,1139 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        AeroMinds - Smart Waste Intelligence
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0f172a,
+                    #111827
+                );
+
+            color: #ffffff;
+        }
+
+        /* ================================
+           HEADER
+        ================================= */
+
+        .header {
+            padding: 24px 40px;
+
+            border-bottom:
+                1px solid #334155;
+
+            background: #0f172a;
+        }
+
+        .header h1 {
+            margin: 0;
+
+            font-size: 32px;
+        }
+
+        .header p {
+            margin:
+                8px 0 0;
+
+            color: #94a3b8;
+
+            font-size: 15px;
+        }
+
+        /* ================================
+           MAIN CONTAINER
+        ================================= */
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+
+            margin: auto;
+
+            padding:
+                30px 0;
+        }
+
+        /* ================================
+           CARD
+        ================================= */
+
+        .card {
+            background: #1e293b;
+
+            border:
+                1px solid #334155;
+
+            border-radius: 16px;
+
+            padding: 25px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 10px 25px
+                rgba(0, 0, 0, 0.20);
+        }
+
+        .card h2 {
+            margin-top: 0;
+
+            margin-bottom: 20px;
+        }
+
+        /* ================================
+           STATUS
+        ================================= */
+
+        .status {
+            display: inline-block;
+
+            padding:
+                7px 14px;
+
+            border-radius: 999px;
+
+            background: #064e3b;
+
+            color: #6ee7b7;
+
+            font-size: 13px;
+
+            font-weight: bold;
+        }
+
+        /* ================================
+           UPLOAD
+        ================================= */
+
+        .upload-box {
+            border:
+                2px dashed #475569;
+
+            border-radius: 14px;
+
+            padding: 40px;
+
+            text-align: center;
+
+            margin-top: 20px;
+        }
+
+        input[type="file"] {
+            margin:
+                15px 0 20px;
+
+            color: #cbd5e1;
+        }
+
+        /* ================================
+           BUTTON
+        ================================= */
+
+        button {
+            border: none;
+
+            border-radius: 8px;
+
+            padding:
+                12px 20px;
+
+            margin:
+                4px 4px 4px 0;
+
+            background: #2563eb;
+
+            color: #ffffff;
+
+            font-size: 15px;
+
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        /* ================================
+           RESULT IMAGE
+        ================================= */
+
+        .result-image {
+            width: 100%;
+
+            max-height: 650px;
+
+            object-fit: contain;
+
+            display: block;
+
+            margin-top: 20px;
+
+            border-radius: 12px;
+
+            background: #0f172a;
+        }
+
+        /* ================================
+           DETECTION CARD
+        ================================= */
+
+        .detection {
+            margin-top: 12px;
+
+            padding: 18px;
+
+            border-radius: 10px;
+
+            background: #0f172a;
+
+            border:
+                1px solid #334155;
+        }
+
+        /* ================================
+           METRIC
+        ================================= */
+
+        .metric {
+            margin:
+                12px 0;
+        }
+
+        .label {
+            color: #94a3b8;
+
+            font-size: 14px;
+
+            margin-bottom: 4px;
+        }
+
+        .value {
+            font-weight: bold;
+
+            color: #ffffff;
+        }
+
+        .confidence {
+            color: #60a5fa;
+
+            font-weight: bold;
+        }
+
+        .empty {
+            color: #94a3b8;
+        }
+
+        /* ================================
+           SEVERITY
+        ================================= */
+
+        .severity-box {
+            margin-top: 15px;
+
+            padding: 20px;
+
+            border-radius: 12px;
+
+            background: #0f172a;
+
+            border:
+                1px solid #334155;
+        }
+
+        .severity-high {
+            color: #f87171;
+        }
+
+        .severity-medium {
+            color: #fbbf24;
+        }
+
+        .severity-low {
+            color: #4ade80;
+        }
+
+        /* ================================
+           INCIDENT STATUS
+        ================================= */
+
+        .status-pending {
+            color: #fbbf24;
+        }
+
+        .status-assigned {
+            color: #60a5fa;
+        }
+
+        .status-cleared {
+            color: #4ade80;
+        }
+
+        /* ================================
+           INCIDENT ID
+        ================================= */
+
+        .incident-id {
+            display: inline-block;
+
+            padding:
+                8px 12px;
+
+            border-radius: 8px;
+
+            background: #172554;
+
+            color: #93c5fd;
+
+            font-weight: bold;
+
+            letter-spacing: 1px;
+        }
+
+        /* ================================
+           FOOTER
+        ================================= */
+
+        .footer {
+            text-align: center;
+
+            padding: 25px;
+
+            color: #64748b;
+
+            font-size: 13px;
+        }
+
+        /* ================================
+           RESPONSIVE
+        ================================= */
+
+        @media (max-width: 700px) {
+
+            .header {
+                padding: 20px;
+            }
+
+            .container {
+                width: 94%;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .upload-box {
+                padding: 25px 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<!-- =====================================================
+     HEADER
+====================================================== -->
+
+<header class="header">
+
+    <h1>
+        🚁 AeroMinds
+    </h1>
+
+    <p>
+        AI-Powered Drone-Based Waste Detection
+        and Smart Sanitation Response
+    </p>
+
+</header>
+
+
+<!-- =====================================================
+     MAIN
+====================================================== -->
+
+<main class="container">
+
+
+    <!-- =================================================
+         MODEL STATUS
+    ================================================== -->
+
+    <div class="card">
+
+        <span class="status">
+            ● AI MODEL ONLINE
+        </span>
+
+        <div class="metric">
+
+            <div class="label">
+                Loaded Model
+            </div>
+
+            <div class="value">
+                {{ model_name }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         UPLOAD IMAGE
+    ================================================== -->
+
+    <div class="card">
+
+        <h2>
+            Upload Aerial Image
+        </h2>
+
+        <p>
+            Upload an aerial or drone image
+            to detect potential dumping sites.
+        </p>
+
+
+        <div class="upload-box">
+
+            <form
+                action="/detect"
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                <input
+                    type="file"
+                    name="image"
+                    accept=".jpg,.jpeg,.png,.webp"
+                    required
+                >
+
+                <br>
+
+                <button type="submit">
+                    🔍 Analyze Image
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         RESULT
+    ================================================== -->
+
+    {% if result_image %}
+
+
+    <!-- =================================================
+         DETECTION RESULT
+    ================================================== -->
+
+    <div class="card">
+
+        <h2>
+            Detection Result
+        </h2>
+
+        <img
+            class="result-image"
+            src="{{ result_image }}"
+            alt="AeroMinds Detection Result"
+        >
+
+    </div>
+
+
+    <!-- =================================================
+         DETECTED INCIDENTS
+    ================================================== -->
+
+    <div class="card">
+
+        <h2>
+            Detected Incidents
+        </h2>
+
+
+        {% if detections %}
+
+
+            {% for detection in detections %}
+
+
+            <div class="detection">
+
+
+                <div class="metric">
+
+                    <div class="label">
+                        Event Class
+                    </div>
+
+                    <div class="value">
+                        {{ detection.class }}
+                    </div>
+
+                </div>
+
+
+                <div class="metric">
+
+                    <div class="label">
+                        Confidence
+                    </div>
+
+                    <div class="confidence">
+                        {{ detection.confidence }}%
+                    </div>
+
+                </div>
+
+
+                <div class="metric">
+
+                    <div class="label">
+                        Bounding Box
+                    </div>
+
+                    <div class="value">
+                        {{ detection.bbox }}
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <p class="empty">
+                No detections above the confidence threshold.
+            </p>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- =================================================
+         SEVERITY
+    ================================================== -->
+
+    {% if severity %}
+
+
+    <div class="card">
+
+        <h2>
+            Incident Severity
+        </h2>
+
+
+        <div class="severity-box">
+
+
+            <!-- Severity Level -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Severity Level
+                </div>
+
+
+                <div
+                    class="
+                        value
+                        {% if severity.level == 'HIGH' %}
+                            severity-high
+                        {% elif severity.level == 'MEDIUM' %}
+                            severity-medium
+                        {% else %}
+                            severity-low
+                        {% endif %}
+                    "
+                >
+
+                    {{ severity.level }}
+
+                </div>
+
+            </div>
+
+
+            <!-- Coverage -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Detected Coverage
+                </div>
+
+                <div class="value">
+                    {{ severity.coverage_percent }}%
+                </div>
+
+            </div>
+
+
+            <!-- Cluster Count -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Cluster Count
+                </div>
+
+                <div class="value">
+                    {{ severity.cluster_count }}
+                </div>
+
+            </div>
+
+
+            <!-- Reason -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Reason
+                </div>
+
+                <div class="value">
+                    {{ severity.reason }}
+                </div>
+
+            </div>
+
+
+            <!-- Recommended Action -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Recommended Action
+                </div>
+
+                <div class="value">
+                    {{ recommended_action }}
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    {% endif %}
+
+
+    <!-- =================================================
+         STEP 5 — INCIDENT RECORD
+    ================================================== -->
+
+    {% if incident %}
+
+
+    <div class="card">
+
+        <h2>
+            🚨 Incident Record
+        </h2>
+
+
+        <div class="severity-box">
+
+
+            <!-- Incident ID -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Incident ID
+                </div>
+
+                <div class="incident-id">
+                    {{ incident.incident_id }}
+                </div>
+
+            </div>
+
+
+            <!-- Event Class -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Event Class
+                </div>
+
+                <div class="value">
+                    {{ incident.event_class }}
+                </div>
+
+            </div>
+
+
+            <!-- Confidence -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Confidence
+                </div>
+
+                <div class="confidence">
+                    {{ incident.confidence }}%
+                </div>
+
+            </div>
+
+
+            <!-- Severity -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Severity
+                </div>
+
+                <div class="value">
+                    {{ incident.severity }}
+                </div>
+
+            </div>
+
+
+            <!-- Timestamp -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Timestamp
+                </div>
+
+                <div class="value">
+                    {{ incident.timestamp }}
+                </div>
+
+            </div>
+
+
+            <!-- Zone -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Zone
+                </div>
+
+                <div class="value">
+                    {{ incident.zone_id }}
+                </div>
+
+            </div>
+
+
+            <!-- Landmark -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Location / Landmark
+                </div>
+
+                <div class="value">
+                    {{ incident.nearest_landmark }}
+                </div>
+
+            </div>
+
+
+            <!-- Recommended Action -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Recommended Action
+                </div>
+
+                <div class="value">
+                    {{ incident.recommended_action }}
+                </div>
+
+            </div>
+
+
+            <!-- Current Status -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Current Status
+                </div>
+
+                <div
+                    class="
+                        value
+                        {% if incident.status == 'PENDING' %}
+                            status-pending
+                        {% elif incident.status == 'ASSIGNED' %}
+                            status-assigned
+                        {% else %}
+                            status-cleared
+                        {% endif %}
+                    "
+                >
+
+                    {{ incident.status }}
+
+                </div>
+
+            </div>
+
+
+            <!-- Evidence -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Evidence
+                </div>
+
+                <div class="value">
+
+                    <a
+                        href="{{ incident.evidence_url }}"
+                        target="_blank"
+                        style="
+                            color:#60a5fa;
+                            text-decoration:none;
+                        "
+                    >
+                        Open Evidence Image
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================================
+                 STATUS CONTROLS
+            ========================================== -->
+
+            <div class="metric">
+
+                <div class="label">
+                    Update Incident Status
+                </div>
+
+                <br>
+
+
+                <!-- Pending -->
+
+                <form
+                    action="/incidents/{{ incident.incident_id }}/status"
+                    method="POST"
+                    style="display:inline;"
+                >
+
+                    <input
+                        type="hidden"
+                        name="status"
+                        value="PENDING"
+                    >
+
+                    <button type="submit">
+                        Pending
+                    </button>
+
+                </form>
+
+
+                <!-- Assigned -->
+
+                <form
+                    action="/incidents/{{ incident.incident_id }}/status"
+                    method="POST"
+                    style="display:inline;"
+                >
+
+                    <input
+                        type="hidden"
+                        name="status"
+                        value="ASSIGNED"
+                    >
+
+                    <button type="submit">
+                        Assigned
+                    </button>
+
+                </form>
+
+
+                <!-- Cleared -->
+
+                <form
+                    action="/incidents/{{ incident.incident_id }}/status"
+                    method="POST"
+                    style="display:inline;"
+                >
+
+                    <input
+                        type="hidden"
+                        name="status"
+                        value="CLEARED"
+                    >
+
+                    <button type="submit">
+                        Cleared
+                    </button>
+
+                </form>
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    {% endif %}
+
+
+    <!-- =================================================
+         STEP 6 — INCIDENT HISTORY
+    ================================================== -->
+
+    <div class="card">
+
+        <h2>
+            📋 Incident History
+        </h2>
+
+
+        {% if incidents %}
+
+
+            {% for item in incidents %}
+
+
+            <div class="detection">
+
+
+                <!-- Incident ID -->
+
+                <div class="metric">
+
+                    <div class="label">
+                        Incident ID
+                    </div>
+
+                    <div class="incident-id">
+                        {{ item.incident_id }}
+                    </div>
+
+                </div>
+
+
+                <!-- Event -->
+
+                <div class="metric">
+
+                    <div class="label">
+                        Event Class
+                    </div>
+
+                    <div class="value">
+                        {{ item.event_class }}
+                    </div>
+
+                </div>
+
+
+                <!-- Severity -->
+
+                <div class="metric">
+
+                    <div class="label">
+                        Severity
+                    </div>
+
+                    <div class="value">
+                        {{ item.severity }}
+                    </div>
+
+                </div>
+
+
+                <!-- Confidence -->
+
+                <div class="metric">
+
+                    <div class="label">
+                        Confidence
+                    </div>
+
+                    <div class="confidence">
+                        {{ item.confidence }}%
+                    </div>
+
+                </div>
+
+
+                <!-- Zone -->
+
+                <div class="metric">
+
+                    <div class="label">
+                        Zone
+                    </div>
+
+                    <div class="value">
+                        {{ item.zone_id }}
+                    </div>
+
+                </div>
+
+
+                <!-- Timestamp -->
+
+                <div class="metric">
+
+                    <div class="label">
+                        Timestamp
+                    </div>
+
+                    <div class="value">
+                        {{ item.timestamp }}
+                    </div>
+
+                </div>
+
+
+                <!-- Status -->
+
+                <div class="metric">
+
+                    <div class="label">
+                        Current Status
+                    </div>
+
+
+                    <div
+                        class="
+                            value
+
+                            {% if item.status == 'PENDING' %}
+                                status-pending
+
+                            {% elif item.status == 'ASSIGNED' %}
+                                status-assigned
+
+                            {% else %}
+                                status-cleared
+
+                            {% endif %}
+                        "
+                    >
+
+                        {{ item.status }}
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <p class="empty">
+                No incidents recorded yet.
+            </p>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+    {% endif %}
+
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+====================================================== -->
+
+<footer class="footer">
+
+    AeroMinds • ELCIA Smart City Drone-AI Challenge 2026
+
+</footer>
+
+
+</body>
+
+</html>
+```
