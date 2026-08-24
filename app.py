@@ -23,6 +23,8 @@ from src.incidents import (
     get_all_incidents
 )
 
+from src.video_processor import process_video
+
 
 # =========================================================
 # FLASK APPLICATION
@@ -38,21 +40,36 @@ app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 OUTPUT_FOLDER = "outputs"
 
+VIDEO_EVIDENCE_FOLDER = os.path.join(
+    OUTPUT_FOLDER,
+    "video_evidence"
+)
+
 MODEL_PATH = os.path.join(
     "models",
     "aerominds_dumping_v2.pt"
 )
 
-ALLOWED_EXTENSIONS = {
+ALLOWED_IMAGE_EXTENSIONS = {
     "jpg",
     "jpeg",
     "png",
     "webp"
 }
 
+ALLOWED_VIDEO_EXTENSIONS = {
+    "mp4",
+    "avi",
+    "mov",
+    "mkv"
+}
+
+# Maximum upload size: 100 MB
+app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024
+
 
 # =========================================================
-# DIRECTORIES
+# CREATE REQUIRED DIRECTORIES
 # =========================================================
 
 os.makedirs(
@@ -66,9 +83,15 @@ os.makedirs(
 )
 
 os.makedirs(
+    VIDEO_EVIDENCE_FOLDER,
+    exist_ok=True
+)
+
+os.makedirs(
     "models",
     exist_ok=True
 )
+
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["OUTPUT_FOLDER"] = OUTPUT_FOLDER
@@ -79,9 +102,11 @@ app.config["OUTPUT_FOLDER"] = OUTPUT_FOLDER
 # =========================================================
 
 if not os.path.exists(MODEL_PATH):
+
     raise FileNotFoundError(
-        f"Model not found: {MODEL_PATH}"
+        f"AeroMinds model not found: {MODEL_PATH}"
     )
+
 
 print("=" * 60)
 print("Loading AeroMinds model...")
@@ -94,10 +119,10 @@ print("=" * 60)
 
 
 # =========================================================
-# HELPER
+# FILE VALIDATION HELPERS
 # =========================================================
 
-def allowed_file(filename):
+def allowed_image_file(filename):
 
     return (
         "." in filename
@@ -105,12 +130,82 @@ def allowed_file(filename):
         filename.rsplit(
             ".",
             1
-        )[1].lower() in ALLOWED_EXTENSIONS
+        )[1].lower()
+        in ALLOWED_IMAGE_EXTENSIONS
     )
 
 
+def allowed_video_file(filename):
+
+    return (
+        "." in filename
+        and
+        filename.rsplit(
+            ".",
+            1
+        )[1].lower()
+        in ALLOWED_VIDEO_EXTENSIONS
+    )
+
 # =========================================================
-# HOME
+# DASHBOARD STATISTICS
+# =========================================================
+
+@app.context_processor
+def inject_dashboard_stats():
+
+    incidents = get_all_incidents()
+
+    high_count = sum(
+        1
+        for item in incidents
+        if item["severity"] == "HIGH"
+    )
+
+    medium_count = sum(
+        1
+        for item in incidents
+        if item["severity"] == "MEDIUM"
+    )
+
+    low_count = sum(
+        1
+        for item in incidents
+        if item["severity"] == "LOW"
+    )
+
+    pending_count = sum(
+        1
+        for item in incidents
+        if item["status"] == "PENDING"
+    )
+
+    assigned_count = sum(
+        1
+        for item in incidents
+        if item["status"] == "ASSIGNED"
+    )
+
+    cleared_count = sum(
+        1
+        for item in incidents
+        if item["status"] == "CLEARED"
+    )
+
+    return {
+        "dashboard_stats": {
+            "total": len(incidents),
+            "high": high_count,
+            "medium": medium_count,
+            "low": low_count,
+            "pending": pending_count,
+            "assigned": assigned_count,
+            "cleared": cleared_count
+        }
+    }
+
+# =========================================================
+# HOME PAGE
 # =========================================================
 
 @app.route("/")
@@ -118,15 +213,17 @@ def index():
 
     return render_template(
         "index.html",
+
         model_name=os.path.basename(
             MODEL_PATH
         ),
+
         incidents=get_all_incidents()
     )
 
 
 # =========================================================
-# HEALTH
+# HEALTH CHECK
 # =========================================================
 
 @app.route("/health")
@@ -143,7 +240,7 @@ def health():
 
 
 # =========================================================
-# DETECTION
+# IMAGE DETECTION
 # =========================================================
 
 @app.route(
@@ -153,20 +250,34 @@ def health():
 def detect():
 
     # -----------------------------------------------------
-    # File validation
+    # Validate upload
     # -----------------------------------------------------
 
     if "image" not in request.files:
-        return "No image uploaded.", 400
+
+        return (
+            "No image uploaded.",
+            400
+        )
+
 
     file = request.files["image"]
 
-    if file.filename == "":
-        return "No image selected.", 400
 
-    if not allowed_file(file.filename):
+    if file.filename == "":
+
         return (
-            "Unsupported file type. "
+            "No image selected.",
+            400
+        )
+
+
+    if not allowed_image_file(
+        file.filename
+    ):
+
+        return (
+            "Unsupported image format. "
             "Use JPG, JPEG, PNG or WEBP.",
             400
         )
@@ -180,25 +291,28 @@ def detect():
         file.filename
     )
 
+
     input_path = os.path.join(
-        app.config["UPLOAD_FOLDER"],
+        UPLOAD_FOLDER,
         filename
     )
 
+
     output_path = os.path.join(
-        app.config["OUTPUT_FOLDER"],
+        OUTPUT_FOLDER,
         filename
     )
 
 
     # -----------------------------------------------------
-    # Save uploaded file
+    # Save upload
     # -----------------------------------------------------
 
     file.save(input_path)
 
     print(
-        f"Running inference on: {input_path}"
+        f"Running inference on: "
+        f"{input_path}"
     )
 
 
@@ -211,11 +325,12 @@ def detect():
         conf=0.40
     )
 
+
     result = results[0]
 
 
     # -----------------------------------------------------
-    # Image dimensions
+    # Original image dimensions
     # -----------------------------------------------------
 
     image_height, image_width = (
@@ -228,6 +343,7 @@ def detect():
     # -----------------------------------------------------
 
     detections = []
+
 
     if result.boxes is not None:
 
@@ -254,10 +370,12 @@ def detect():
             detections.append(
                 {
                     "class": class_name,
+
                     "confidence": round(
                         confidence * 100,
                         2
                     ),
+
                     "bbox": [
                         round(x1, 2),
                         round(y1, 2),
@@ -269,7 +387,7 @@ def detect():
 
 
     # -----------------------------------------------------
-    # Severity
+    # Severity calculation
     # -----------------------------------------------------
 
     severity = calculate_severity(
@@ -303,6 +421,7 @@ def detect():
 
     incident = None
 
+
     if detections:
 
         primary_detection = max(
@@ -310,19 +429,37 @@ def detect():
             key=lambda d: d["confidence"]
         )
 
+
         evidence_url = url_for(
             "static_output",
             filename=filename
         )
 
+
         incident = create_incident(
-            event_class=primary_detection["class"],
-            confidence=primary_detection["confidence"],
-            severity=severity["level"],
+
+            event_class=primary_detection[
+                "class"
+            ],
+
+            confidence=primary_detection[
+                "confidence"
+            ],
+
+            severity=severity[
+                "level"
+            ],
+
             source_file=filename,
+
             evidence_url=evidence_url,
+
             zone_id="Zone A",
-            nearest_landmark="Demo / Manually Configured",
+
+            nearest_landmark=(
+                "Demo / Manually Configured"
+            ),
+
             recommended_action=action
         )
 
@@ -332,6 +469,7 @@ def detect():
     # -----------------------------------------------------
 
     return render_template(
+
         "index.html",
 
         result_image=url_for(
@@ -354,6 +492,246 @@ def detect():
         incidents=get_all_incidents()
     )
 
+
+# =========================================================
+# VIDEO DETECTION
+# =========================================================
+
+@app.route(
+    "/detect/video",
+    methods=["POST"]
+)
+def detect_video():
+
+    # -----------------------------------------------------
+    # Validate upload
+    # -----------------------------------------------------
+
+    if "video" not in request.files:
+
+        return (
+            "No video uploaded.",
+            400
+        )
+
+
+    file = request.files["video"]
+
+
+    if file.filename == "":
+
+        return (
+            "No video selected.",
+            400
+        )
+
+
+    if not allowed_video_file(
+        file.filename
+    ):
+
+        return (
+            "Unsupported video format. "
+            "Use MP4, AVI, MOV or MKV.",
+            400
+        )
+
+
+    # -----------------------------------------------------
+    # Secure filename
+    # -----------------------------------------------------
+
+    filename = secure_filename(
+        file.filename
+    )
+
+
+    video_path = os.path.join(
+        UPLOAD_FOLDER,
+        filename
+    )
+
+
+    # -----------------------------------------------------
+    # Save video
+    # -----------------------------------------------------
+
+    file.save(video_path)
+
+    print(
+        f"Processing video: "
+        f"{video_path}"
+    )
+
+
+    # -----------------------------------------------------
+    # Process video
+    # -----------------------------------------------------
+
+    try:
+
+        video_result = process_video(
+
+            video_path=video_path,
+
+            model=model,
+
+            evidence_dir=VIDEO_EVIDENCE_FOLDER,
+
+            confidence_threshold=0.40,
+
+            frame_skip=10,
+
+            min_event_gap_seconds=3
+        )
+
+
+    except Exception as exc:
+
+        print(
+            f"Video processing error: {exc}"
+        )
+
+        return (
+            "Video processing failed: "
+            f"{exc}",
+            500
+        )
+
+
+    # -----------------------------------------------------
+    # Create incidents from video events
+    # -----------------------------------------------------
+
+    created_incidents = []
+
+
+    for event in video_result["events"]:
+
+        event_detections = event[
+            "detections"
+        ]
+
+
+        if not event_detections:
+            continue
+
+
+        severity = calculate_severity(
+
+            detections=event_detections,
+
+            image_width=event[
+                "width"
+            ],
+
+            image_height=event[
+                "height"
+            ]
+        )
+
+
+        action = recommended_action(
+            severity["level"]
+        )
+
+
+        primary_detection = max(
+
+            event_detections,
+
+            key=lambda d:
+                d["confidence"]
+        )
+
+
+        evidence_filename = os.path.basename(
+            event["evidence_path"]
+        )
+
+
+        evidence_url = url_for(
+
+            "video_evidence",
+
+            filename=evidence_filename
+        )
+
+
+        incident = create_incident(
+
+            event_class=
+                primary_detection["class"],
+
+            confidence=
+                primary_detection["confidence"],
+
+            severity=
+                severity["level"],
+
+            source_file=filename,
+
+            evidence_url=evidence_url,
+
+            zone_id="Zone A",
+
+            nearest_landmark=(
+                "Demo / Manually Configured"
+            ),
+
+            recommended_action=action
+        )
+
+
+        created_incidents.append(
+            incident
+        )
+
+
+        # Add URL directly to the event
+        # for cleaner dashboard handling.
+        event["evidence_url"] = (
+            evidence_url
+        )
+
+
+    # -----------------------------------------------------
+    # Render video results
+    # -----------------------------------------------------
+
+    return render_template(
+
+        "index.html",
+
+        model_name=os.path.basename(
+            MODEL_PATH
+        ),
+
+        incidents=get_all_incidents(),
+
+        video_result=video_result,
+
+        video_incidents=created_incidents
+    )
+
+
+# =========================================================
+# VIDEO EVIDENCE
+# =========================================================
+
+@app.route(
+    "/video-evidence/<filename>"
+)
+def video_evidence(filename):
+
+    return send_from_directory(
+
+        VIDEO_EVIDENCE_FOLDER,
+
+        filename
+    )
+
+
 # =========================================================
 # INCIDENT STATUS
 # =========================================================
@@ -362,10 +740,14 @@ def detect():
     "/incidents/<incident_id>/status",
     methods=["GET", "POST"]
 )
-def change_incident_status(incident_id):
+def change_incident_status(
+    incident_id
+):
 
-    # If someone opens the URL directly in the browser,
-    # redirect them to the incident page.
+    # -----------------------------------------------------
+    # Direct GET access
+    # -----------------------------------------------------
+
     if request.method == "GET":
 
         return redirect(
@@ -375,27 +757,40 @@ def change_incident_status(incident_id):
             )
         )
 
-    # POST from Pending / Assigned / Cleared button
+
+    # -----------------------------------------------------
+    # POST from status buttons
+    # -----------------------------------------------------
+
     new_status = request.form.get(
         "status",
         ""
     )
 
+
     incident = update_incident_status(
+
         incident_id,
+
         new_status
     )
+
 
     if incident is None:
 
         return (
-            "Incident not found or invalid status.",
+            "Incident not found "
+            "or invalid status.",
             400
         )
 
+
     return redirect(
+
         url_for(
+
             "view_incident",
+
             incident_id=incident_id
         )
     )
@@ -408,18 +803,25 @@ def change_incident_status(incident_id):
 @app.route(
     "/incidents/<incident_id>"
 )
-def view_incident(incident_id):
+def view_incident(
+    incident_id
+):
 
     incidents = get_all_incidents()
 
     incident = None
 
+
     for item in incidents:
 
-        if item["incident_id"] == incident_id:
+        if item[
+            "incident_id"
+        ] == incident_id:
 
             incident = item
+
             break
+
 
     if incident is None:
 
@@ -427,6 +829,7 @@ def view_incident(incident_id):
             "Incident not found.",
             404
         )
+
 
     return render_template(
 
@@ -443,9 +846,14 @@ def view_incident(incident_id):
         detections=[],
 
         severity={
-            "level": incident["severity"],
+            "level": incident[
+                "severity"
+            ],
+
             "coverage_percent": 0,
+
             "cluster_count": 0,
+
             "reason": (
                 "Incident generated "
                 "from stored detection."
@@ -463,7 +871,28 @@ def view_incident(incident_id):
 
 
 # =========================================================
-# OUTPUT FILES
+# INCIDENT HISTORY
+# =========================================================
+
+@app.route(
+    "/incidents"
+)
+def incidents():
+
+    return render_template(
+
+        "index.html",
+
+        model_name=os.path.basename(
+            MODEL_PATH
+        ),
+
+        incidents=get_all_incidents()
+    )
+
+
+# =========================================================
+# SERVE IMAGE OUTPUTS
 # =========================================================
 
 @app.route(
@@ -472,18 +901,38 @@ def view_incident(incident_id):
 def static_output(filename):
 
     return send_from_directory(
-        app.config["OUTPUT_FOLDER"],
+
+        OUTPUT_FOLDER,
+
         filename
     )
 
+
 # =========================================================
-# RUN
+# ERROR HANDLER — LARGE FILE
+# =========================================================
+
+@app.errorhandler(413)
+def request_entity_too_large(error):
+
+    return (
+        "Uploaded file is too large. "
+        "Maximum allowed size is 100 MB.",
+        413
+    )
+
+
+# =========================================================
+# RUN APPLICATION
 # =========================================================
 
 if __name__ == "__main__":
 
     app.run(
+
         host="127.0.0.1",
+
         port=5000,
+
         debug=True
     )

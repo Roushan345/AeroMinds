@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,9 +9,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
-        AeroMinds - Smart Waste Intelligence
-    </title>
+    <title>AeroMinds - Smart Waste Intelligence</title>
 
     <style>
 
@@ -23,227 +20,245 @@
         body {
             margin: 0;
             min-height: 100vh;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #0f172a,
-                    #111827
-                );
-
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #111827);
             color: #ffffff;
         }
 
-        /* ================================
+        /* =================================================
            HEADER
-        ================================= */
+        ================================================= */
 
         .header {
-            padding: 24px 40px;
-
-            border-bottom:
-                1px solid #334155;
-
+            padding: 26px 40px;
+            border-bottom: 1px solid #334155;
             background: #0f172a;
         }
 
         .header h1 {
             margin: 0;
-
-            font-size: 32px;
+            font-size: 34px;
         }
 
         .header p {
-            margin:
-                8px 0 0;
-
+            margin: 8px 0 0;
             color: #94a3b8;
-
             font-size: 15px;
         }
 
-        /* ================================
+        /* =================================================
            MAIN CONTAINER
-        ================================= */
+        ================================================= */
 
         .container {
-            width: 90%;
-            max-width: 1200px;
-
+            width: 92%;
+            max-width: 1250px;
             margin: auto;
-
-            padding:
-                30px 0;
+            padding: 30px 0;
         }
 
-        /* ================================
+        /* =================================================
            CARD
-        ================================= */
+        ================================================= */
 
         .card {
             background: #1e293b;
-
-            border:
-                1px solid #334155;
-
-            border-radius: 16px;
-
-            padding: 25px;
-
+            border: 1px solid #334155;
+            border-radius: 18px;
+            padding: 26px;
             margin-bottom: 25px;
-
-            box-shadow:
-                0 10px 25px
-                rgba(0, 0, 0, 0.20);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.20);
         }
 
         .card h2 {
             margin-top: 0;
-
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
-        /* ================================
-           STATUS
-        ================================= */
+        /* =================================================
+           MODEL STATUS
+        ================================================= */
 
         .status {
             display: inline-block;
-
-            padding:
-                7px 14px;
-
+            padding: 8px 15px;
             border-radius: 999px;
-
             background: #064e3b;
-
             color: #6ee7b7;
-
             font-size: 13px;
-
             font-weight: bold;
         }
 
-        /* ================================
+        /* =================================================
+           KPI DASHBOARD
+        ================================================= */
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(150px, 1fr)
+            );
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .kpi-card {
+            background: #111827;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .kpi-label {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .kpi-high .kpi-value {
+            color: #f87171;
+        }
+
+        .kpi-medium .kpi-value {
+            color: #fbbf24;
+        }
+
+        .kpi-low .kpi-value {
+            color: #4ade80;
+        }
+
+        .kpi-cleared .kpi-value {
+            color: #4ade80;
+        }
+
+        .kpi-pending .kpi-value {
+            color: #fbbf24;
+        }
+
+        .kpi-assigned .kpi-value {
+            color: #60a5fa;
+        }
+
+        /* =================================================
            UPLOAD
-        ================================= */
+        ================================================= */
 
         .upload-box {
-            border:
-                2px dashed #475569;
-
+            border: 2px dashed #475569;
             border-radius: 14px;
-
-            padding: 40px;
-
+            padding: 38px;
             text-align: center;
-
             margin-top: 20px;
         }
 
         input[type="file"] {
-            margin:
-                15px 0 20px;
-
+            margin: 15px 0 20px;
             color: #cbd5e1;
+            max-width: 100%;
         }
 
-        /* ================================
-           BUTTON
-        ================================= */
+        /* =================================================
+           BUTTONS
+        ================================================= */
 
         button {
             border: none;
-
             border-radius: 8px;
-
-            padding:
-                12px 20px;
-
-            margin:
-                4px 4px 4px 0;
-
+            padding: 12px 20px;
+            margin: 4px;
             background: #2563eb;
-
             color: #ffffff;
-
             font-size: 15px;
-
             cursor: pointer;
+            transition: background 0.2s ease;
         }
 
         button:hover {
             background: #1d4ed8;
         }
 
-        /* ================================
+        .button-secondary {
+            background: #475569;
+        }
+
+        .button-secondary:hover {
+            background: #334155;
+        }
+
+        .button-success {
+            background: #059669;
+        }
+
+        .button-success:hover {
+            background: #047857;
+        }
+
+        /* =================================================
+           DIVIDER
+        ================================================= */
+
+        .divider {
+            margin: 32px 0;
+            border: 0;
+            border-top: 1px solid #334155;
+        }
+
+        /* =================================================
            RESULT IMAGE
-        ================================= */
+        ================================================= */
 
         .result-image {
             width: 100%;
-
-            max-height: 650px;
-
+            max-height: 700px;
             object-fit: contain;
-
             display: block;
-
             margin-top: 20px;
-
             border-radius: 12px;
-
             background: #0f172a;
         }
 
-        /* ================================
-           DETECTION CARD
-        ================================= */
+        /* =================================================
+           DETECTION
+        ================================================= */
 
         .detection {
-            margin-top: 12px;
-
+            margin-top: 14px;
             padding: 18px;
-
-            border-radius: 10px;
-
+            border-radius: 12px;
             background: #0f172a;
-
-            border:
-                1px solid #334155;
+            border: 1px solid #334155;
         }
 
-        /* ================================
-           METRIC
-        ================================= */
+        /* =================================================
+           METRICS
+        ================================================= */
 
         .metric {
-            margin:
-                12px 0;
+            margin: 13px 0;
         }
 
         .label {
             color: #94a3b8;
-
             font-size: 14px;
-
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
 
         .value {
             font-weight: bold;
-
             color: #ffffff;
+            word-break: break-word;
         }
 
         .confidence {
             color: #60a5fa;
-
             font-weight: bold;
         }
 
@@ -251,21 +266,16 @@
             color: #94a3b8;
         }
 
-        /* ================================
+        /* =================================================
            SEVERITY
-        ================================= */
+        ================================================= */
 
         .severity-box {
             margin-top: 15px;
-
             padding: 20px;
-
             border-radius: 12px;
-
             background: #0f172a;
-
-            border:
-                1px solid #334155;
+            border: 1px solid #334155;
         }
 
         .severity-high {
@@ -280,9 +290,9 @@
             color: #4ade80;
         }
 
-        /* ================================
+        /* =================================================
            INCIDENT STATUS
-        ================================= */
+        ================================================= */
 
         .status-pending {
             color: #fbbf24;
@@ -296,44 +306,62 @@
             color: #4ade80;
         }
 
-        /* ================================
+        /* =================================================
            INCIDENT ID
-        ================================= */
+        ================================================= */
 
         .incident-id {
             display: inline-block;
-
-            padding:
-                8px 12px;
-
+            padding: 8px 13px;
             border-radius: 8px;
-
             background: #172554;
-
             color: #93c5fd;
-
             font-weight: bold;
-
             letter-spacing: 1px;
         }
 
-        /* ================================
+        /* =================================================
+           EVIDENCE LINKS
+        ================================================= */
+
+        .evidence-link {
+            display: inline-block;
+            margin-top: 8px;
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .evidence-link:hover {
+            text-decoration: underline;
+        }
+
+        /* =================================================
+           VIDEO EVENT
+        ================================================= */
+
+        .video-event {
+            margin-top: 16px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #0f172a;
+            border: 1px solid #334155;
+        }
+
+        /* =================================================
            FOOTER
-        ================================= */
+        ================================================= */
 
         .footer {
             text-align: center;
-
-            padding: 25px;
-
+            padding: 28px;
             color: #64748b;
-
             font-size: 13px;
         }
 
-        /* ================================
+        /* =================================================
            RESPONSIVE
-        ================================= */
+        ================================================= */
 
         @media (max-width: 700px) {
 
@@ -353,6 +381,14 @@
                 padding: 25px 15px;
             }
 
+            button {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            .kpi-value {
+                font-size: 25px;
+            }
         }
 
     </style>
@@ -368,9 +404,7 @@
 
 <header class="header">
 
-    <h1>
-        🚁 AeroMinds
-    </h1>
+    <h1>🚁 AeroMinds</h1>
 
     <p>
         AI-Powered Drone-Based Waste Detection
@@ -409,17 +443,130 @@
 
         </div>
 
+        <div class="metric">
+
+            <div class="label">
+                System
+            </div>
+
+            <div class="value">
+                AeroMinds Smart Waste Intelligence
+            </div>
+
+        </div>
+
     </div>
 
 
     <!-- =================================================
-         UPLOAD IMAGE
+         KPI DASHBOARD
+    ================================================== -->
+
+    <div class="kpi-grid">
+
+        <div class="kpi-card">
+
+            <div class="kpi-label">
+                Total Incidents
+            </div>
+
+            <div class="kpi-value">
+                {{ dashboard_stats.total }}
+            </div>
+
+        </div>
+
+
+        <div class="kpi-card kpi-high">
+
+            <div class="kpi-label">
+                High Severity
+            </div>
+
+            <div class="kpi-value">
+                {{ dashboard_stats.high }}
+            </div>
+
+        </div>
+
+
+        <div class="kpi-card kpi-medium">
+
+            <div class="kpi-label">
+                Medium Severity
+            </div>
+
+            <div class="kpi-value">
+                {{ dashboard_stats.medium }}
+            </div>
+
+        </div>
+
+
+        <div class="kpi-card kpi-low">
+
+            <div class="kpi-label">
+                Low Severity
+            </div>
+
+            <div class="kpi-value">
+                {{ dashboard_stats.low }}
+            </div>
+
+        </div>
+
+
+        <div class="kpi-card kpi-pending">
+
+            <div class="kpi-label">
+                Pending
+            </div>
+
+            <div class="kpi-value">
+                {{ dashboard_stats.pending }}
+            </div>
+
+        </div>
+
+
+        <div class="kpi-card kpi-assigned">
+
+            <div class="kpi-label">
+                Assigned
+            </div>
+
+            <div class="kpi-value">
+                {{ dashboard_stats.assigned }}
+            </div>
+
+        </div>
+
+
+        <div class="kpi-card kpi-cleared">
+
+            <div class="kpi-label">
+                Cleared
+            </div>
+
+            <div class="kpi-value">
+                {{ dashboard_stats.cleared }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         UPLOAD IMAGE + VIDEO
     ================================================== -->
 
     <div class="card">
 
+        <!-- IMAGE -->
+
         <h2>
-            Upload Aerial Image
+            🖼️ Upload Aerial Image
         </h2>
 
         <p>
@@ -453,508 +600,712 @@
 
         </div>
 
+
+        <hr class="divider">
+
+
+        <!-- VIDEO -->
+
+        <h2>
+            🎥 Upload Aerial Video
+        </h2>
+
+        <p>
+            Upload an aerial/drone video for
+            frame-by-frame dumping-site analysis.
+        </p>
+
+
+        <div class="upload-box">
+
+            <form
+                action="/detect/video"
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                <input
+                    type="file"
+                    name="video"
+                    accept=".mp4,.avi,.mov,.mkv"
+                    required
+                >
+
+                <br>
+
+                <button type="submit">
+                    🎥 Analyze Video
+                </button>
+
+            </form>
+
+        </div>
+
     </div>
 
 
     <!-- =================================================
-         RESULT
+         IMAGE RESULTS
     ================================================== -->
 
     {% if result_image %}
 
 
-    <!-- =================================================
-         DETECTION RESULT
-    ================================================== -->
+        <!-- DETECTION RESULT -->
 
-    <div class="card">
+        <div class="card">
 
-        <h2>
-            Detection Result
-        </h2>
+            <h2>
+                🔍 Detection Result
+            </h2>
 
-        <img
-            class="result-image"
-            src="{{ result_image }}"
-            alt="AeroMinds Detection Result"
-        >
+            <img
+                class="result-image"
+                src="{{ result_image }}"
+                alt="AeroMinds Detection Result"
+            >
 
-    </div>
+        </div>
 
 
-    <!-- =================================================
-         DETECTED INCIDENTS
-    ================================================== -->
+        <!-- DETECTED INCIDENTS -->
 
-    <div class="card">
+        <div class="card">
 
-        <h2>
-            Detected Incidents
-        </h2>
+            <h2>
+                📌 Detected Incidents
+            </h2>
 
 
-        {% if detections %}
+            {% if detections %}
+
+                {% for detection in detections %}
+
+                    <div class="detection">
+
+                        <div class="metric">
+
+                            <div class="label">
+                                Event Class
+                            </div>
+
+                            <div class="value">
+                                {{ detection.class }}
+                            </div>
+
+                        </div>
 
 
-            {% for detection in detections %}
+                        <div class="metric">
+
+                            <div class="label">
+                                Confidence
+                            </div>
+
+                            <div class="confidence">
+                                {{ detection.confidence }}%
+                            </div>
+
+                        </div>
 
 
-            <div class="detection">
+                        <div class="metric">
 
+                            <div class="label">
+                                Bounding Box
+                            </div>
 
-                <div class="metric">
+                            <div class="value">
+                                {{ detection.bbox }}
+                            </div>
 
-                    <div class="label">
-                        Event Class
+                        </div>
+
                     </div>
 
-                    <div class="value">
-                        {{ detection.class }}
+                {% endfor %}
+
+            {% else %}
+
+                <p class="empty">
+                    No detections above the confidence threshold.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- SEVERITY -->
+
+        {% if severity %}
+
+            <div class="card">
+
+                <h2>
+                    ⚠️ Incident Severity
+                </h2>
+
+                <div class="severity-box">
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Severity Level
+                        </div>
+
+                        <div
+                            class="
+                                value
+                                {% if severity.level == 'HIGH' %}
+                                    severity-high
+                                {% elif severity.level == 'MEDIUM' %}
+                                    severity-medium
+                                {% else %}
+                                    severity-low
+                                {% endif %}
+                            "
+                        >
+                            {{ severity.level }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Detected Coverage
+                        </div>
+
+                        <div class="value">
+                            {{ severity.coverage_percent }}%
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Cluster Count
+                        </div>
+
+                        <div class="value">
+                            {{ severity.cluster_count }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Reason
+                        </div>
+
+                        <div class="value">
+                            {{ severity.reason }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Recommended Action
+                        </div>
+
+                        <div class="value">
+                            {{ recommended_action }}
+                        </div>
+
                     </div>
 
                 </div>
-
-
-                <div class="metric">
-
-                    <div class="label">
-                        Confidence
-                    </div>
-
-                    <div class="confidence">
-                        {{ detection.confidence }}%
-                    </div>
-
-                </div>
-
-
-                <div class="metric">
-
-                    <div class="label">
-                        Bounding Box
-                    </div>
-
-                    <div class="value">
-                        {{ detection.bbox }}
-                    </div>
-
-                </div>
-
 
             </div>
-
-
-            {% endfor %}
-
-
-        {% else %}
-
-
-            <p class="empty">
-                No detections above the confidence threshold.
-            </p>
-
 
         {% endif %}
 
 
-    </div>
+        <!-- INCIDENT RECORD -->
+
+        {% if incident %}
+
+            <div class="card">
+
+                <h2>
+                    🚨 Incident Record
+                </h2>
+
+                <div class="severity-box">
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Incident ID
+                        </div>
+
+                        <div class="incident-id">
+                            {{ incident.incident_id }}
+                        </div>
+
+                    </div>
 
 
-    <!-- =================================================
-         SEVERITY
-    ================================================== -->
+                    <div class="metric">
 
-    {% if severity %}
+                        <div class="label">
+                            Event Class
+                        </div>
 
+                        <div class="value">
+                            {{ incident.event_class }}
+                        </div>
 
-    <div class="card">
-
-        <h2>
-            Incident Severity
-        </h2>
-
-
-        <div class="severity-box">
+                    </div>
 
 
-            <!-- Severity Level -->
+                    <div class="metric">
 
-            <div class="metric">
+                        <div class="label">
+                            Confidence
+                        </div>
 
-                <div class="label">
-                    Severity Level
-                </div>
+                        <div class="confidence">
+                            {{ incident.confidence }}%
+                        </div>
+
+                    </div>
 
 
-                <div
-                    class="
-                        value
-                        {% if severity.level == 'HIGH' %}
-                            severity-high
-                        {% elif severity.level == 'MEDIUM' %}
-                            severity-medium
-                        {% else %}
-                            severity-low
-                        {% endif %}
-                    "
-                >
+                    <div class="metric">
 
-                    {{ severity.level }}
+                        <div class="label">
+                            Severity
+                        </div>
+
+                        <div class="value">
+                            {{ incident.severity }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Timestamp
+                        </div>
+
+                        <div class="value">
+                            {{ incident.timestamp }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Zone
+                        </div>
+
+                        <div class="value">
+                            {{ incident.zone_id }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Location / Landmark
+                        </div>
+
+                        <div class="value">
+                            {{ incident.nearest_landmark }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Recommended Action
+                        </div>
+
+                        <div class="value">
+                            {{ incident.recommended_action }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Current Status
+                        </div>
+
+                        <div
+                            class="
+                                value
+                                {% if incident.status == 'PENDING' %}
+                                    status-pending
+                                {% elif incident.status == 'ASSIGNED' %}
+                                    status-assigned
+                                {% else %}
+                                    status-cleared
+                                {% endif %}
+                            "
+                        >
+                            {{ incident.status }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Evidence
+                        </div>
+
+                        <a
+                            class="evidence-link"
+                            href="{{ incident.evidence_url }}"
+                            target="_blank"
+                        >
+                            Open Evidence Image
+                        </a>
+
+                    </div>
+
+
+                    <!-- STATUS CONTROLS -->
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Update Incident Status
+                        </div>
+
+                        <br>
+
+                        <form
+                            action="/incidents/{{ incident.incident_id }}/status"
+                            method="POST"
+                            style="display:inline;"
+                        >
+
+                            <input
+                                type="hidden"
+                                name="status"
+                                value="PENDING"
+                            >
+
+                            <button type="submit">
+                                Pending
+                            </button>
+
+                        </form>
+
+
+                        <form
+                            action="/incidents/{{ incident.incident_id }}/status"
+                            method="POST"
+                            style="display:inline;"
+                        >
+
+                            <input
+                                type="hidden"
+                                name="status"
+                                value="ASSIGNED"
+                            >
+
+                            <button type="submit">
+                                Assigned
+                            </button>
+
+                        </form>
+
+
+                        <form
+                            action="/incidents/{{ incident.incident_id }}/status"
+                            method="POST"
+                            style="display:inline;"
+                        >
+
+                            <input
+                                type="hidden"
+                                name="status"
+                                value="CLEARED"
+                            >
+
+                            <button
+                                type="submit"
+                                class="button-success"
+                            >
+                                Cleared
+                            </button>
+
+                        </form>
+
+                    </div>
 
                 </div>
 
             </div>
 
-
-            <!-- Coverage -->
-
-            <div class="metric">
-
-                <div class="label">
-                    Detected Coverage
-                </div>
-
-                <div class="value">
-                    {{ severity.coverage_percent }}%
-                </div>
-
-            </div>
-
-
-            <!-- Cluster Count -->
-
-            <div class="metric">
-
-                <div class="label">
-                    Cluster Count
-                </div>
-
-                <div class="value">
-                    {{ severity.cluster_count }}
-                </div>
-
-            </div>
-
-
-            <!-- Reason -->
-
-            <div class="metric">
-
-                <div class="label">
-                    Reason
-                </div>
-
-                <div class="value">
-                    {{ severity.reason }}
-                </div>
-
-            </div>
-
-
-            <!-- Recommended Action -->
-
-            <div class="metric">
-
-                <div class="label">
-                    Recommended Action
-                </div>
-
-                <div class="value">
-                    {{ recommended_action }}
-                </div>
-
-            </div>
-
-
-        </div>
-
-    </div>
-
+        {% endif %}
 
     {% endif %}
 
 
     <!-- =================================================
-         STEP 5 — INCIDENT RECORD
+         VIDEO ANALYSIS
     ================================================== -->
 
-    {% if incident %}
+    {% if video_result %}
 
+        <div class="card">
 
-    <div class="card">
+            <h2>
+                🎥 Video Analysis
+            </h2>
 
-        <h2>
-            🚨 Incident Record
-        </h2>
+            <div class="severity-box">
 
+                <div class="metric">
 
-        <div class="severity-box">
+                    <div class="label">
+                        Total Video Frames
+                    </div>
 
+                    <div class="value">
+                        {{ video_result.total_frames }}
+                    </div>
 
-            <!-- Incident ID -->
-
-            <div class="metric">
-
-                <div class="label">
-                    Incident ID
                 </div>
 
-                <div class="incident-id">
-                    {{ incident.incident_id }}
+
+                <div class="metric">
+
+                    <div class="label">
+                        Frames Processed
+                    </div>
+
+                    <div class="value">
+                        {{ video_result.frames_processed }}
+                    </div>
+
                 </div>
 
-            </div>
 
+                <div class="metric">
 
-            <!-- Event Class -->
+                    <div class="label">
+                        Total Detections
+                    </div>
 
-            <div class="metric">
+                    <div class="value">
+                        {{ video_result.detections_found }}
+                    </div>
 
-                <div class="label">
-                    Event Class
                 </div>
 
-                <div class="value">
-                    {{ incident.event_class }}
+
+                <div class="metric">
+
+                    <div class="label">
+                        Events Created
+                    </div>
+
+                    <div class="value">
+                        {{ video_result.events|length }}
+                    </div>
+
                 </div>
 
-            </div>
 
+                <div class="metric">
 
-            <!-- Confidence -->
+                    <div class="label">
+                        Video Duration
+                    </div>
 
-            <div class="metric">
+                    <div class="value">
+                        {{ video_result.duration_seconds }}
+                        seconds
+                    </div>
 
-                <div class="label">
-                    Confidence
                 </div>
 
-                <div class="confidence">
-                    {{ incident.confidence }}%
+
+                <div class="metric">
+
+                    <div class="label">
+                        Processing Time
+                    </div>
+
+                    <div class="value">
+                        {{ video_result.processing_time_seconds }}
+                        seconds
+                    </div>
+
                 </div>
 
-            </div>
 
+                <div class="metric">
 
-            <!-- Severity -->
+                    <div class="label">
+                        Analysis Rate
+                    </div>
 
-            <div class="metric">
+                    <div class="value">
+                        {{ video_result.analyzed_fps }}
+                        frames/sec
+                    </div>
 
-                <div class="label">
-                    Severity
                 </div>
 
-                <div class="value">
-                    {{ incident.severity }}
+
+                <div class="metric">
+
+                    <div class="label">
+                        Real-Time Factor
+                    </div>
+
+                    <div class="value">
+                        {{ video_result.realtime_factor }}×
+                    </div>
+
                 </div>
 
-            </div>
 
+                <div class="metric">
 
-            <!-- Timestamp -->
+                    <div class="label">
+                        Frame Sampling
+                    </div>
 
-            <div class="metric">
-
-                <div class="label">
-                    Timestamp
-                </div>
-
-                <div class="value">
-                    {{ incident.timestamp }}
-                </div>
-
-            </div>
-
-
-            <!-- Zone -->
-
-            <div class="metric">
-
-                <div class="label">
-                    Zone
-                </div>
-
-                <div class="value">
-                    {{ incident.zone_id }}
-                </div>
-
-            </div>
-
-
-            <!-- Landmark -->
-
-            <div class="metric">
-
-                <div class="label">
-                    Location / Landmark
-                </div>
-
-                <div class="value">
-                    {{ incident.nearest_landmark }}
-                </div>
-
-            </div>
-
-
-            <!-- Recommended Action -->
-
-            <div class="metric">
-
-                <div class="label">
-                    Recommended Action
-                </div>
-
-                <div class="value">
-                    {{ incident.recommended_action }}
-                </div>
-
-            </div>
-
-
-            <!-- Current Status -->
-
-            <div class="metric">
-
-                <div class="label">
-                    Current Status
-                </div>
-
-                <div
-                    class="
-                        value
-                        {% if incident.status == 'PENDING' %}
-                            status-pending
-                        {% elif incident.status == 'ASSIGNED' %}
-                            status-assigned
-                        {% else %}
-                            status-cleared
-                        {% endif %}
-                    "
-                >
-
-                    {{ incident.status }}
+                    <div class="value">
+                        1 frame every
+                        {{ video_result.frame_skip }}
+                        frames
+                    </div>
 
                 </div>
 
             </div>
-
-
-            <!-- Evidence -->
-
-            <div class="metric">
-
-                <div class="label">
-                    Evidence
-                </div>
-
-                <div class="value">
-
-                    <a
-                        href="{{ incident.evidence_url }}"
-                        target="_blank"
-                        style="
-                            color:#60a5fa;
-                            text-decoration:none;
-                        "
-                    >
-                        Open Evidence Image
-                    </a>
-
-                </div>
-
-            </div>
-
-
-            <!-- =========================================
-                 STATUS CONTROLS
-            ========================================== -->
-
-            <div class="metric">
-
-                <div class="label">
-                    Update Incident Status
-                </div>
-
-                <br>
-
-
-                <!-- Pending -->
-
-                <form
-                    action="/incidents/{{ incident.incident_id }}/status"
-                    method="POST"
-                    style="display:inline;"
-                >
-
-                    <input
-                        type="hidden"
-                        name="status"
-                        value="PENDING"
-                    >
-
-                    <button type="submit">
-                        Pending
-                    </button>
-
-                </form>
-
-
-                <!-- Assigned -->
-
-                <form
-                    action="/incidents/{{ incident.incident_id }}/status"
-                    method="POST"
-                    style="display:inline;"
-                >
-
-                    <input
-                        type="hidden"
-                        name="status"
-                        value="ASSIGNED"
-                    >
-
-                    <button type="submit">
-                        Assigned
-                    </button>
-
-                </form>
-
-
-                <!-- Cleared -->
-
-                <form
-                    action="/incidents/{{ incident.incident_id }}/status"
-                    method="POST"
-                    style="display:inline;"
-                >
-
-                    <input
-                        type="hidden"
-                        name="status"
-                        value="CLEARED"
-                    >
-
-                    <button type="submit">
-                        Cleared
-                    </button>
-
-                </form>
-
-
-            </div>
-
 
         </div>
 
-    </div>
 
+        <!-- VIDEO EVIDENCE -->
+
+        <div class="card">
+
+            <h2>
+                🎯 Video Evidence
+            </h2>
+
+
+            {% if video_result.events %}
+
+                {% for event in video_result.events %}
+
+                    <div class="video-event">
+
+                        <div class="metric">
+
+                            <div class="label">
+                                Event
+                            </div>
+
+                            <div class="value">
+                                #{{ loop.index }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="metric">
+
+                            <div class="label">
+                                Frame Number
+                            </div>
+
+                            <div class="value">
+                                {{ event.frame_number }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="metric">
+
+                            <div class="label">
+                                Video Timestamp
+                            </div>
+
+                            <div class="value">
+                                {{ event.timestamp_seconds }}
+                                seconds
+                            </div>
+
+                        </div>
+
+
+                        <div class="metric">
+
+                            <div class="label">
+                                Detections
+                            </div>
+
+                            <div class="value">
+                                {{ event.detections|length }}
+                            </div>
+
+                        </div>
+
+
+                        {% if event.evidence_url %}
+
+                            <a
+                                class="evidence-link"
+                                href="{{ event.evidence_url }}"
+                                target="_blank"
+                            >
+                                Open Evidence Frame
+                            </a>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p class="empty">
+                    No video events were generated.
+                </p>
+
+            {% endif %}
+
+        </div>
 
     {% endif %}
 
 
     <!-- =================================================
-         STEP 6 — INCIDENT HISTORY
+         INCIDENT HISTORY
     ================================================== -->
 
     <div class="card">
@@ -966,157 +1317,137 @@
 
         {% if incidents %}
 
-
             {% for item in incidents %}
 
+                <div class="detection">
 
-            <div class="detection">
+                    <div class="metric">
 
+                        <div class="label">
+                            Incident ID
+                        </div>
 
-                <!-- Incident ID -->
+                        <div class="incident-id">
+                            {{ item.incident_id }}
+                        </div>
 
-                <div class="metric">
-
-                    <div class="label">
-                        Incident ID
                     </div>
 
-                    <div class="incident-id">
-                        {{ item.incident_id }}
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Event Class
+                        </div>
+
+                        <div class="value">
+                            {{ item.event_class }}
+                        </div>
+
                     </div>
+
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Severity
+                        </div>
+
+                        <div class="value">
+                            {{ item.severity }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Confidence
+                        </div>
+
+                        <div class="confidence">
+                            {{ item.confidence }}%
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Zone
+                        </div>
+
+                        <div class="value">
+                            {{ item.zone_id }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Timestamp
+                        </div>
+
+                        <div class="value">
+                            {{ item.timestamp }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="label">
+                            Current Status
+                        </div>
+
+                        <div
+                            class="
+                                value
+                                {% if item.status == 'PENDING' %}
+                                    status-pending
+                                {% elif item.status == 'ASSIGNED' %}
+                                    status-assigned
+                                {% else %}
+                                    status-cleared
+                                {% endif %}
+                            "
+                        >
+                            {{ item.status }}
+                        </div>
+
+                    </div>
+
+
+                    {% if item.evidence_url %}
+
+                        <a
+                            class="evidence-link"
+                            href="{{ item.evidence_url }}"
+                            target="_blank"
+                        >
+                            Open Evidence
+                        </a>
+
+                    {% endif %}
 
                 </div>
-
-
-                <!-- Event -->
-
-                <div class="metric">
-
-                    <div class="label">
-                        Event Class
-                    </div>
-
-                    <div class="value">
-                        {{ item.event_class }}
-                    </div>
-
-                </div>
-
-
-                <!-- Severity -->
-
-                <div class="metric">
-
-                    <div class="label">
-                        Severity
-                    </div>
-
-                    <div class="value">
-                        {{ item.severity }}
-                    </div>
-
-                </div>
-
-
-                <!-- Confidence -->
-
-                <div class="metric">
-
-                    <div class="label">
-                        Confidence
-                    </div>
-
-                    <div class="confidence">
-                        {{ item.confidence }}%
-                    </div>
-
-                </div>
-
-
-                <!-- Zone -->
-
-                <div class="metric">
-
-                    <div class="label">
-                        Zone
-                    </div>
-
-                    <div class="value">
-                        {{ item.zone_id }}
-                    </div>
-
-                </div>
-
-
-                <!-- Timestamp -->
-
-                <div class="metric">
-
-                    <div class="label">
-                        Timestamp
-                    </div>
-
-                    <div class="value">
-                        {{ item.timestamp }}
-                    </div>
-
-                </div>
-
-
-                <!-- Status -->
-
-                <div class="metric">
-
-                    <div class="label">
-                        Current Status
-                    </div>
-
-
-                    <div
-                        class="
-                            value
-
-                            {% if item.status == 'PENDING' %}
-                                status-pending
-
-                            {% elif item.status == 'ASSIGNED' %}
-                                status-assigned
-
-                            {% else %}
-                                status-cleared
-
-                            {% endif %}
-                        "
-                    >
-
-                        {{ item.status }}
-
-                    </div>
-
-                </div>
-
-
-            </div>
-
 
             {% endfor %}
 
-
         {% else %}
-
 
             <p class="empty">
                 No incidents recorded yet.
             </p>
 
-
         {% endif %}
 
-
     </div>
-
-
-    {% endif %}
 
 
 </main>
@@ -1136,4 +1467,3 @@
 </body>
 
 </html>
-```
