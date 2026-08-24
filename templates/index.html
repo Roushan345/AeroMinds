@@ -26,6 +26,31 @@
         }
 
         /* =================================================
+   AEROMINDS BRAND
+================================================= */
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.logo {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+}
+
+.brand h1 {
+    margin: 0;
+    font-size: 38px;
+}
+
+.brand p {
+    margin: 6px 0 0;
+    color: #94a3b8;
+}
+        /* =================================================
            HEADER
         ================================================= */
 
@@ -401,18 +426,20 @@
 <!-- =====================================================
      HEADER
 ====================================================== -->
-
-<header class="header">
-
-    <h1>🚁 AeroMinds</h1>
-
-    <p>
-        AI-Powered Drone-Based Waste Detection
-        and Smart Sanitation Response
-    </p>
-
-</header>
-
+<div class="brand">
+    <img
+    src="{{ url_for('static', filename='aerominds_logo.png') }}"
+    alt="AeroMinds Logo"
+    class="logo"
+>
+    <div>
+        <h1>AeroMinds</h1>
+        <p>
+            AI-Powered Drone-Based Waste Detection
+            and Smart Sanitation Response
+        </p>
+    </div>
+</div>
 
 <!-- =====================================================
      MAIN
