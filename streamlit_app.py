@@ -1,4 +1,5 @@
 import os
+import base64
 import tempfile
 
 import streamlit as st
@@ -178,7 +179,11 @@ def main():
     )
 
     logo_path = os.path.join("static", "aerominds_logo.png")
-    logo_markup = '<img class="logo" src="/app/static/aerominds_logo.png">' if os.path.exists(logo_path) else ''
+    logo_markup = ""
+    if os.path.exists(logo_path):
+        with open(logo_path, "rb") as logo_file:
+            logo_data = base64.b64encode(logo_file.read()).decode("ascii")
+        logo_markup = f'<img class="logo" src="data:image/png;base64,{logo_data}" alt="AeroMinds logo">'
     st.markdown(
         f'<div class="brand">{logo_markup}<div><h1>AeroMinds</h1><p>AI-Powered Drone-Based Waste Detection and Smart Sanitation Response</p></div></div>',
         unsafe_allow_html=True,
