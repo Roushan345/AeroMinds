@@ -158,7 +158,7 @@ def main():
         .brand { display: flex; align-items: center; gap: 18px; padding: 0 0 24px; border-bottom: 1px solid #334155; }
         .brand h1 { margin: 0; color: #ffffff; font-size: 38px; }
         .brand p { margin: 6px 0 0; color: #94a3b8; }
-        .logo { width: 74px; height: 74px; object-fit: contain; }
+        .logo { width: 130px; height: 130px; object-fit: contain; }
         .section-card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 1rem 1.25rem; margin: 1rem 0; }
         .section-card h2 { color: #ffffff; margin: 0 0 1rem; }
         .status-card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 1.2rem; margin: 1rem 0; }
@@ -173,6 +173,7 @@ def main():
         div[data-baseweb="tab-list"] { gap: 8px; }
         button[data-baseweb="tab"] { color: #cbd5e1; }
         button[data-baseweb="tab"][aria-selected="true"] { color: #60a5fa; }
+        @media (max-width: 700px) { .logo { width: 92px; height: 92px; } .brand h1 { font-size: 30px; } .brand p { font-size: 13px; } }
         </style>
         """,
         unsafe_allow_html=True,
