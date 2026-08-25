@@ -39,12 +39,13 @@ def collect_detections(result, model):
 
 
 def show_severity(severity, action):
-    st.subheader("Incident severity")
+    st.markdown('<div class="section-card"><h2>Incident Severity</h2>', unsafe_allow_html=True)
     columns = st.columns(3)
     columns[0].metric("Level", severity["level"])
     columns[1].metric("Coverage", f'{severity["coverage_percent"]}%')
     columns[2].metric("Clusters", severity["cluster_count"])
     st.info(f'{severity["reason"]} Recommended action: {action}.')
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def save_upload(uploaded_file, suffix):
@@ -124,10 +125,11 @@ def video_detection(model, uploaded_file):
 
 
 def show_incidents():
-    st.subheader("Incident history")
+    st.markdown('<div class="section-card"><h2>Incident History</h2>', unsafe_allow_html=True)
     incidents = get_all_incidents()
     if not incidents:
         st.caption("No incidents recorded yet.")
+        st.markdown('</div>', unsafe_allow_html=True)
         return
     for incident in incidents:
         with st.expander(f'{incident["incident_id"]} | {incident["severity"]} | {incident["event_class"]}'):
@@ -141,28 +143,78 @@ def show_incidents():
             if st.button("Update status", key=f'update_{incident["incident_id"]}'):
                 update_incident_status(incident["incident_id"], new_status)
                 st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def main():
     st.set_page_config(page_title="AeroMinds", page_icon="🌿", layout="wide")
-    st.title("AeroMinds")
-    st.caption("AI-powered aerial dumping-site detection")
-    st.sidebar.success("AI model online")
-    st.sidebar.write("Model: aerominds_dumping_v2.pt")
-    st.sidebar.write("Class: dumping-sites")
+    st.markdown(
+        """
+        <style>
+        .stApp { background: linear-gradient(135deg, #0f172a, #111827); color: #ffffff; }
+        [data-testid="stHeader"] { background: #0f172a; }
+        .block-container { max-width: 1250px; padding-top: 2rem; }
+        .brand { display: flex; align-items: center; gap: 18px; padding: 0 0 24px; border-bottom: 1px solid #334155; }
+        .brand h1 { margin: 0; color: #ffffff; font-size: 38px; }
+        .brand p { margin: 6px 0 0; color: #94a3b8; }
+        .logo { width: 74px; height: 74px; object-fit: contain; }
+        .section-card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 1rem 1.25rem; margin: 1rem 0; }
+        .section-card h2 { color: #ffffff; margin: 0 0 1rem; }
+        .status-card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 1.2rem; margin: 1rem 0; }
+        .status-pill { display: inline-block; padding: 8px 15px; border-radius: 999px; background: #064e3b; color: #6ee7b7; font-weight: 700; font-size: 13px; }
+        [data-testid="stMetric"] { background: #111827; border: 1px solid #334155; border-radius: 10px; padding: 12px; }
+        [data-testid="stMetricLabel"] { color: #94a3b8; }
+        [data-testid="stMetricValue"] { color: #ffffff; }
+        [data-testid="stFileUploader"] { background: #0f172a; border: 2px dashed #475569; border-radius: 12px; padding: 1rem; }
+        .stButton > button { background: #2563eb; color: #ffffff; border: 0; border-radius: 8px; font-weight: 700; }
+        .stButton > button:hover { background: #1d4ed8; color: #ffffff; }
+        [data-testid="stSidebar"] { background: #0f172a; border-right: 1px solid #334155; }
+        div[data-baseweb="tab-list"] { gap: 8px; }
+        button[data-baseweb="tab"] { color: #cbd5e1; }
+        button[data-baseweb="tab"][aria-selected="true"] { color: #60a5fa; }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    logo_path = os.path.join("static", "aerominds_logo.png")
+    logo_markup = '<img class="logo" src="/app/static/aerominds_logo.png">' if os.path.exists(logo_path) else ''
+    st.markdown(
+        f'<div class="brand">{logo_markup}<div><h1>AeroMinds</h1><p>AI-Powered Drone-Based Waste Detection and Smart Sanitation Response</p></div></div>',
+        unsafe_allow_html=True,
+    )
 
     model = load_model()
+    incidents = get_all_incidents()
+    counts = {
+        "Total Incidents": len(incidents),
+        "High Severity": sum(item["severity"] == "HIGH" for item in incidents),
+        "Medium Severity": sum(item["severity"] == "MEDIUM" for item in incidents),
+        "Low Severity": sum(item["severity"] == "LOW" for item in incidents),
+        "Pending": sum(item["status"] == "PENDING" for item in incidents),
+        "Assigned": sum(item["status"] == "ASSIGNED" for item in incidents),
+        "Cleared": sum(item["status"] == "CLEARED" for item in incidents),
+    }
+    st.markdown('<div class="status-card"><span class="status-pill">AI MODEL ONLINE</span><p><b>Loaded Model:</b> aerominds_dumping_v2.pt</p><p><b>Detected Class:</b> dumping-sites</p></div>', unsafe_allow_html=True)
+    metric_columns = st.columns(7)
+    for column, (label, value) in zip(metric_columns, counts.items()):
+        column.metric(label, value)
+
     image_tab, video_tab, history_tab = st.tabs(["Image analysis", "Video analysis", "Incident history"])
 
     with image_tab:
+        st.markdown('<div class="section-card"><h2>Upload Aerial Image</h2><p>Upload an aerial or drone image to detect potential dumping sites.</p>', unsafe_allow_html=True)
         uploaded_image = st.file_uploader("Upload an aerial image", type=["jpg", "jpeg", "png", "webp"])
         if uploaded_image and st.button("Analyze image", type="primary"):
             image_detection(model, uploaded_image)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with video_tab:
+        st.markdown('<div class="section-card"><h2>Upload Aerial Video</h2><p>Upload an aerial/drone video for frame-by-frame dumping-site analysis.</p>', unsafe_allow_html=True)
         uploaded_video = st.file_uploader("Upload an aerial video", type=["mp4", "avi", "mov", "mkv"])
         if uploaded_video and st.button("Analyze video", type="primary"):
             video_detection(model, uploaded_video)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with history_tab:
         show_incidents()
