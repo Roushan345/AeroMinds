@@ -186,63 +186,74 @@ def video_detection(model, uploaded_file):
 def show_incidents():
     incidents = get_all_incidents()
     if not incidents:
-        st.html('<div class="section-card"><p>No incidents recorded yet.</p></div>')
+        st.info("No incidents recorded yet.")
         return
         
     for incident in incidents:
         sev_color = "#35E38A"
-        if incident["severity"] == "HIGH": sev_color = "#FF5C64"
-        elif incident["severity"] == "MEDIUM": sev_color = "#FFB62E"
+        sev_class = "pill-low"
+        if incident["severity"] == "HIGH": 
+            sev_color = "#FF5C64"
+            sev_class = "pill-high"
+        elif incident["severity"] == "MEDIUM": 
+            sev_color = "#FFB62E"
+            sev_class = "pill-med"
         
-        status_color = "#35E38A"
-        if incident["status"] == "PENDING": status_color = "#FFB62E"
-        elif incident["status"] == "ASSIGNED": status_color = "#4DA3FF"
+        status = incident["status"]
+        
+        # SVG Icons
+        pin_icon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>'
+        trash_icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 6px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>'
+
+        # Timeline logic
+        line1_class = "timeline-line-filled" if status in ["PENDING", "ASSIGNED", "CLEARED"] else "timeline-line"
+        line2_class = "timeline-line-filled" if status in ["ASSIGNED", "CLEARED"] else "timeline-line"
+        line3_class = "timeline-line-filled" if status == "CLEARED" else "timeline-line"
 
         with st.container():
             st.html(f"""
             <div class="incident-card" style="border-left: 5px solid {sev_color}">
                 <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
-                    <div style="font-size: 20px; font-weight: 700; color: #F4F7FA;">INCIDENT {incident['incident_id']}</div>
+                    <div style="font-size: 20px; font-weight: 700; color: #F4F7FA;" class="incident-id mono-font">INCIDENT {incident['incident_id']}</div>
                     <div style="font-size: 14px; color: #8EA4B8;">{incident['timestamp'].split('.')[0]}</div>
                 </div>
                 
                 <div style="display:flex; justify-content:space-between; margin-bottom: 25px;">
                     <div>
-                        <div style="color: {sev_color}; font-weight: 700; font-size: 16px;">{incident['severity']} SEVERITY</div>
-                        <div style="font-size: 18px; font-weight: 600; margin-top: 5px;">{incident['event_class']}</div>
-                        <div style="color: #4DA3FF; font-weight: 600;">{incident['confidence']}% confidence</div>
+                        <div class="severity-pill {sev_class}">{incident['severity']} SEVERITY</div>
+                        <div style="font-size: 18px; font-weight: 600; margin-top: 10px; color: #F4F7FA;">{trash_icon} {incident['event_class']}</div>
+                        <div style="color: #4DA3FF; font-weight: 600; margin-top: 5px;">{incident['confidence']}% confidence</div>
                     </div>
                     <div style="text-align: right;">
-                        <div style="font-size: 18px; font-weight: 600;">{incident['zone_id']}</div>
+                        <div style="font-size: 18px; font-weight: 600;">{pin_icon} {incident['zone_id']}</div>
                         <div style="color: #8EA4B8; font-size: 14px; margin-top: 5px;">{incident['nearest_landmark']}</div>
                     </div>
                 </div>
                 
                 <div class="timeline">
                     <div class="timeline-item" style="color: #F4F7FA;">
-                        <div class="timeline-dot" style="background: #00D9A6;"></div>
+                        <div class="timeline-dot" style="background: #00D9A6; box-shadow: 0 0 10px #00D9A6;"></div>
                         DETECTED
                     </div>
-                    <div class="timeline-line"></div>
-                    <div class="timeline-item" style="color: {'#F4F7FA' if incident['status'] in ['PENDING', 'ASSIGNED', 'CLEARED'] else '#8EA4B8'};">
-                        <div class="timeline-dot" style="background: {'#FFB62E' if incident['status'] in ['PENDING', 'ASSIGNED', 'CLEARED'] else '#13283A'};"></div>
+                    <div class="{line1_class}"></div>
+                    <div class="timeline-item" style="color: {'#F4F7FA' if status in ['PENDING', 'ASSIGNED', 'CLEARED'] else '#8EA4B8'};">
+                        <div class="timeline-dot" style="background: {'#FFB62E' if status in ['PENDING', 'ASSIGNED', 'CLEARED'] else '#13283A'}; box-shadow: {'0 0 10px #FFB62E' if status in ['PENDING', 'ASSIGNED', 'CLEARED'] else 'none'};"></div>
                         PENDING
                     </div>
-                    <div class="timeline-line"></div>
-                    <div class="timeline-item" style="color: {'#F4F7FA' if incident['status'] in ['ASSIGNED', 'CLEARED'] else '#8EA4B8'};">
-                        <div class="timeline-dot" style="background: {'#4DA3FF' if incident['status'] in ['ASSIGNED', 'CLEARED'] else '#13283A'};"></div>
+                    <div class="{line2_class}"></div>
+                    <div class="timeline-item" style="color: {'#F4F7FA' if status in ['ASSIGNED', 'CLEARED'] else '#8EA4B8'};">
+                        <div class="timeline-dot" style="background: {'#4DA3FF' if status in ['ASSIGNED', 'CLEARED'] else '#13283A'}; box-shadow: {'0 0 10px #4DA3FF' if status in ['ASSIGNED', 'CLEARED'] else 'none'};"></div>
                         ASSIGNED
                     </div>
-                    <div class="timeline-line"></div>
-                    <div class="timeline-item" style="color: {'#F4F7FA' if incident['status'] == 'CLEARED' else '#8EA4B8'};">
-                        <div class="timeline-dot" style="background: {'#35E38A' if incident['status'] == 'CLEARED' else '#13283A'};"></div>
+                    <div class="{line3_class}"></div>
+                    <div class="timeline-item" style="color: {'#F4F7FA' if status == 'CLEARED' else '#8EA4B8'};">
+                        <div class="timeline-dot" style="background: {'#35E38A' if status == 'CLEARED' else '#13283A'}; box-shadow: {'0 0 10px #35E38A' if status == 'CLEARED' else 'none'};"></div>
                         CLEARED
                     </div>
                 </div>
             </div>
             """)
             
-            # Use columns for action buttons right under the visual card
             c1, c2, c3 = st.columns([1,1,2])
             with c1:
                 new_status = st.selectbox(
@@ -262,10 +273,30 @@ def main():
     st.set_page_config(page_title="AeroMinds", page_icon="🌿", layout="wide")
     st.html("""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Outfit:wght@300;400;600;700;800&display=swap');
         
         html, body, [class*="css"]  {
             font-family: 'Outfit', sans-serif;
+        }
+        
+        /* Typography overrides */
+        .hero-headline, .stat-val, .mono-font, .incident-id {
+            font-family: 'Space Grotesk', monospace;
+        }
+        
+        /* Animations */
+        @keyframes slideUpFade {
+            0% { opacity: 0; transform: translateY(15px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes radarSweep {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes pulseAlert {
+            0% { box-shadow: 0 0 0 0 rgba(255, 92, 100, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 92, 100, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 92, 100, 0); }
         }
         
         .stApp { 
@@ -275,7 +306,7 @@ def main():
         [data-testid="stHeader"] { background: transparent; }
         .block-container { max-width: 1250px; padding-top: 1rem; }
         
-        /* HER SECTION */
+        /* HERO SECTION */
         .hero { 
             padding: 20px 0 30px; 
             border-bottom: 1px solid rgba(255,255,255,0.05); 
@@ -287,13 +318,21 @@ def main():
         }
         .hero-logo {
             display: flex; align-items: center; gap: 15px;
+            position: relative;
+        }
+        .hero-logo::before {
+            content: ''; position: absolute; top: -50px; left: -50px; width: 220px; height: 220px;
+            background: conic-gradient(from 0deg, transparent 0%, rgba(0, 217, 166, 0.05) 80%, rgba(0, 217, 166, 0.2) 100%);
+            border-radius: 50%; z-index: -1; animation: radarSweep 4s linear infinite;
         }
         .logo { width: 120px; height: 120px; object-fit: contain; filter: drop-shadow(0 0 15px rgba(0, 217, 166, 0.4)); }
-        .hero-logo h1 { margin: 0; color: #F4F7FA; font-size: 42px; font-weight: 700; }
+        .hero-logo h1 { margin: 0; color: #F4F7FA; font-size: 42px; font-weight: 700; letter-spacing: -1px;}
         
         .system-online {
             display: flex; align-items: center; gap: 8px;
-            font-size: 12px; font-weight: 700; color: #8EA4B8; letter-spacing: 1px;
+            font-size: 12px; font-weight: 700; color: #35E38A; letter-spacing: 1px;
+            background: rgba(53, 227, 138, 0.05); padding: 8px 16px; border-radius: 20px;
+            border: 1px solid rgba(53, 227, 138, 0.2); box-shadow: 0 0 20px rgba(53, 227, 138, 0.1);
         }
         .online-dot {
             width: 8px; height: 8px; border-radius: 50%; background: #35E38A;
@@ -313,7 +352,7 @@ def main():
             color: #00D9A6; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;
         }
         .hero-headline {
-            font-size: 54px; font-weight: 800; color: #F4F7FA; margin: 0 0 15px; line-height: 1.1;
+            font-size: 54px; font-weight: 800; color: #F4F7FA; margin: 0 0 15px; line-height: 1.1; letter-spacing: -1.5px;
         }
         .hero-sub {
             font-size: 20px; color: #8EA4B8; max-width: 600px; line-height: 1.5; font-weight: 300;
@@ -322,8 +361,8 @@ def main():
         /* LIVE STRIP */
         .live-strip {
             display: flex; justify-content: space-between;
-            background: #0D1B2A; border: 1px solid #13283A; border-radius: 12px; padding: 15px 25px;
-            margin-bottom: 40px;
+            background: rgba(13, 27, 42, 0.7); backdrop-filter: blur(10px); border: 1px solid #13283A; border-radius: 12px; padding: 15px 25px;
+            margin-bottom: 40px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         .strip-item {
             display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: #F4F7FA;
@@ -333,37 +372,45 @@ def main():
         
         /* SECTION CARDS */
         .section-card { 
-            background: #0D1B2A; 
-            border: 1px solid #13283A; 
+            background: rgba(13, 27, 42, 0.7); backdrop-filter: blur(12px); 
+            border: 1px solid #13283A; border-top: 1px solid rgba(255,255,255,0.05);
             border-radius: 16px; 
             padding: 2rem; 
             margin: 1.5rem 0; 
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
-        }
-        .section-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(0, 217, 166, 0.10);
-            border: 1px solid #1c364e;
         }
         
         /* VISUAL COMMAND CENTER */
         .cmd-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 20px;
         }
-        .cmd-box { background: #07111F; border: 1px solid #13283A; border-radius: 12px; padding: 25px; }
+        .cmd-box { 
+            background: rgba(13, 27, 42, 0.7); backdrop-filter: blur(12px); border-radius: 16px; padding: 25px; 
+            border: 1px solid #13283A; border-top: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        }
         .cmd-title { font-size: 13px; color: #8EA4B8; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 20px; text-align: center; }
         
         .stat-row { display: flex; justify-content: space-between; margin-bottom: 15px; }
         .stat-col { text-align: center; }
-        .stat-val { font-size: 38px; font-weight: 700; }
-        .stat-lab { font-size: 12px; color: #8EA4B8; font-weight: 600; letter-spacing: 1px; }
+        .stat-val { font-size: 38px; font-weight: 700; animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .stat-col:nth-child(1) .stat-val { animation-delay: 0.1s; }
+        .stat-col:nth-child(2) .stat-val { animation-delay: 0.2s; }
+        .stat-col:nth-child(3) .stat-val { animation-delay: 0.3s; }
+        .stat-col:nth-child(4) .stat-val { animation-delay: 0.4s; }
+        .stat-lab { font-size: 12px; color: #8EA4B8; font-weight: 600; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 6px; }
         
-        .bar-container { width: 100%; display: flex; gap: 4px; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 15px; }
+        .pulse-high {
+            width: 8px; height: 8px; border-radius: 50%; background: #FF5C64; display: inline-block;
+            animation: pulseAlert 1.5s infinite;
+        }
+        
+        .bar-container { width: 100%; display: flex; gap: 4px; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 15px; background: rgba(0,0,0,0.2); }
         
         /* UPLOAD DRAG/DROP */
         [data-testid="stFileUploader"] { 
-            background: #07111F; 
+            background: rgba(13, 27, 42, 0.5); backdrop-filter: blur(8px);
             border: 2px dashed #13283A; 
             border-radius: 16px; padding: 2rem; 
             transition: all 0.3s ease;
@@ -374,23 +421,33 @@ def main():
         }
         
         /* RESULTS & TIMELINES */
-        .styled-table { width: 100%; border-collapse: collapse; background: #0D1B2A; border-radius: 12px; overflow: hidden; border: 1px solid #13283A; }
+        .styled-table { width: 100%; border-collapse: collapse; background: rgba(13, 27, 42, 0.7); backdrop-filter: blur(10px); border-radius: 12px; overflow: hidden; border: 1px solid #13283A; }
         .styled-table td { padding: 15px 20px; border-bottom: 1px solid #13283A; font-size: 15px; }
         .styled-table tr:last-child td { border-bottom: none; }
         
-        .analysis-box { background: #0D1B2A; padding: 20px; border-radius: 12px; border: 1px solid #13283A; }
+        .analysis-box { background: rgba(13, 27, 42, 0.7); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; border: 1px solid #13283A; }
         
         /* INCIDENT CARDS */
         .incident-card {
-            background: #0D1B2A; border: 1px solid #13283A; border-radius: 16px; padding: 25px; margin-bottom: 10px;
-            transition: all 0.3s ease; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            background: rgba(13, 27, 42, 0.7); backdrop-filter: blur(12px); 
+            border: 1px solid #13283A; border-top: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px; padding: 25px; margin-bottom: 15px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 5px 20px rgba(0,0,0,0.2);
         }
-        .incident-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid #1c364e; }
+        .incident-card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(0, 217, 166, 0.15); border: 1px solid rgba(0, 217, 166, 0.3); }
+        
+        .severity-pill {
+            display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; letter-spacing: 1px;
+        }
+        .pill-high { background: rgba(255, 92, 100, 0.15); color: #FF5C64; border: 1px solid rgba(255, 92, 100, 0.4); text-shadow: 0 0 10px rgba(255, 92, 100, 0.5); }
+        .pill-med { background: rgba(255, 182, 46, 0.15); color: #FFB62E; border: 1px solid rgba(255, 182, 46, 0.4); }
+        .pill-low { background: rgba(53, 227, 138, 0.15); color: #35E38A; border: 1px solid rgba(53, 227, 138, 0.4); }
         
         .timeline { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; padding: 0 10px; }
-        .timeline-item { display: flex; flex-direction: column; align-items: center; font-size: 12px; font-weight: 700; letter-spacing: 1px; }
-        .timeline-dot { width: 14px; height: 14px; border-radius: 50%; margin-bottom: 10px; border: 2px solid #0D1B2A; box-shadow: 0 0 0 1px #13283A; }
-        .timeline-line { flex-grow: 1; height: 2px; background: #13283A; margin: 0 15px; transform: translateY(-10px); }
+        .timeline-item { display: flex; flex-direction: column; align-items: center; font-size: 12px; font-weight: 700; letter-spacing: 1px; z-index: 2;}
+        .timeline-dot { width: 14px; height: 14px; border-radius: 50%; margin-bottom: 10px; border: 2px solid #0D1B2A; box-shadow: 0 0 0 1px #13283A; z-index: 2;}
+        .timeline-line { flex-grow: 1; height: 3px; background: #13283A; margin: 0 15px; transform: translateY(-10px); z-index: 1;}
+        .timeline-line-filled { background: linear-gradient(90deg, #00D9A6, #4DA3FF); box-shadow: 0 0 10px rgba(0, 217, 166, 0.3); }
         
         /* BUTTONS */
         .stButton > button { 
@@ -467,13 +524,14 @@ def main():
     ass_pct = (assigned/total*100) if total > 0 else 0
     clr_pct = (cleared/total*100) if total > 0 else 0
 
+    pulse_html = '<div class="pulse-high"></div>' if high > 0 else ''
     st.html(f"""
     <div class="cmd-grid">
         <div class="cmd-box">
             <div class="cmd-title">───── INCIDENT DISTRIBUTION ─────</div>
             <div class="stat-row">
                 <div class="stat-col"><div class="stat-val">{total}</div><div class="stat-lab">TOTAL</div></div>
-                <div class="stat-col"><div class="stat-val" style="color:#FF5C64;">{high}</div><div class="stat-lab">HIGH</div></div>
+                <div class="stat-col"><div class="stat-val" style="color:#FF5C64;">{high}</div><div class="stat-lab">{pulse_html} HIGH</div></div>
                 <div class="stat-col"><div class="stat-val" style="color:#FFB62E;">{medium}</div><div class="stat-lab">MEDIUM</div></div>
                 <div class="stat-col"><div class="stat-val" style="color:#35E38A;">{low}</div><div class="stat-lab">LOW</div></div>
             </div>
