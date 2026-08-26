@@ -1,0 +1,9 @@
+venv/
+.git/
+__pycache__/
+*.pyc
+outputs/
+uploads/
+data/
+yolov8n.pt
+test_yolo.py

@@ -20,6 +20,8 @@ def load_model():
     return YOLO(MODEL_PATH)
 
 
+
+
 def collect_detections(result, model):
     detections = []
     if result.boxes is None:
@@ -40,13 +42,37 @@ def collect_detections(result, model):
 
 
 def show_severity(severity, action):
-    st.markdown('<div class="section-card"><h2>Incident Severity</h2>', unsafe_allow_html=True)
-    columns = st.columns(3)
-    columns[0].metric("Level", severity["level"])
-    columns[1].metric("Coverage", f'{severity["coverage_percent"]}%')
-    columns[2].metric("Clusters", severity["cluster_count"])
-    st.info(f'{severity["reason"]} Recommended action: {action}.')
-    st.markdown('</div>', unsafe_allow_html=True)
+    high_color = "#FF5C64"
+    med_color = "#FFB62E"
+    low_color = "#35E38A"
+    
+    color = low_color
+    if severity["level"] == "HIGH": color = high_color
+    elif severity["level"] == "MEDIUM": color = med_color
+    
+    html = f"""
+    <div class="section-card" style="border-left: 5px solid {color}">
+        <h2 style="color: {color}; margin-top: 0; font-size: 24px;">⚠ INCIDENT SEVERITY</h2>
+        <div style="font-size: 42px; font-weight: 800; margin-bottom: 20px; color: {color}">{severity["level"]}</div>
+        
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+            <div>
+                <div style="font-size: 28px; font-weight: 700;">{severity["coverage_percent"]}%</div>
+                <div style="color: #8EA4B8; font-size: 14px; text-transform: uppercase;">WASTE COVERAGE</div>
+            </div>
+            <div>
+                <div style="font-size: 28px; font-weight: 700;">{severity["cluster_count"]}</div>
+                <div style="color: #8EA4B8; font-size: 14px; text-transform: uppercase;">CLUSTER</div>
+            </div>
+        </div>
+        
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-top: 20px;">
+            <div style="color: #8EA4B8; font-size: 14px; text-transform: uppercase; margin-bottom: 5px;">Recommended Response</div>
+            <div style="font-size: 18px; font-weight: 600;">{action}</div>
+        </div>
+    </div>
+    """
+    st.html(html)
 
 
 def save_upload(uploaded_file, suffix):
@@ -67,9 +93,21 @@ def image_detection(model, uploaded_file):
     )
     action = recommended_action(severity["level"])
 
-    st.image(result.plot()[:, :, ::-1], caption="Detection result", use_container_width=True)
+    st.html('<div class="analysis-box" style="margin-top:30px;"><div style="color:#00D9A6; font-weight:700; margin-bottom:15px; display:flex; justify-content:space-between;"><span>AI ANALYSIS COMPLETE</span><span>⚡ SUCCESS</span></div>')
+    st.image(result.plot()[:, :, ::-1], use_container_width=True)
+    st.html('</div>')
+
     if detections:
-        st.dataframe(detections, use_container_width=True, hide_index=True)
+        # Custom HTML table for detections
+        html = f"""
+        <div style="margin-top: 30px; margin-bottom: 10px; font-weight: 700; color: #F4F7FA; font-size: 20px;">{len(detections)} DETECTIONS</div>
+        <table class="styled-table">
+        """
+        for d in detections:
+            html += f'<tr><td style="font-weight: 600;">{d["class"].upper()}</td><td style="color:#4DA3FF; font-weight:bold;">{d["confidence"]}%</td><td style="color:#35E38A;">CONFIRMED</td></tr>'
+        html += "</table>"
+        st.html(html)
+        
         create_incident(
             event_class=max(detections, key=lambda item: item["confidence"])["class"],
             confidence=max(detections, key=lambda item: item["confidence"])["confidence"],
@@ -78,9 +116,9 @@ def image_detection(model, uploaded_file):
             evidence_url="Streamlit session result",
             recommended_action=action,
         )
+        show_severity(severity, action)
     else:
         st.warning("No dumping site detected above the 40% confidence threshold.")
-    show_severity(severity, action)
 
 
 def video_detection(model, uploaded_file):
@@ -99,17 +137,38 @@ def video_detection(model, uploaded_file):
     finally:
         os.unlink(video_path)
 
-    metrics = {
-        "Total frames": video_result["total_frames"],
-        "Frames processed": video_result["frames_processed"],
-        "Detections": video_result["detections_found"],
-        "Events": len(video_result["events"]),
-        "Processing seconds": video_result["processing_time_seconds"],
-    }
-    st.json(metrics)
+    # Video Dashboard
+    html = f"""
+    <div class="section-card">
+        <h2 style="font-size: 20px; color: #F4F7FA; margin-bottom: 25px;">VIDEO ANALYSIS</h2>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+            <div>
+                <div style="font-size: 32px; font-weight: 700; color: #4DA3FF;">{video_result['processing_time_seconds']}s</div>
+                <div style="font-size: 13px; color: #8EA4B8; text-transform: uppercase;">Processing Time</div>
+            </div>
+            <div>
+                <div style="font-size: 32px; font-weight: 700;">{video_result['total_frames']}</div>
+                <div style="font-size: 13px; color: #8EA4B8; text-transform: uppercase;">Total Frames</div>
+            </div>
+            <div>
+                <div style="font-size: 32px; font-weight: 700;">{video_result['frames_processed']}</div>
+                <div style="font-size: 13px; color: #8EA4B8; text-transform: uppercase;">Frames Processed</div>
+            </div>
+            <div>
+                <div style="font-size: 32px; font-weight: 700; color: #00D9A6;">{len(video_result['events'])}</div>
+                <div style="font-size: 13px; color: #8EA4B8; text-transform: uppercase;">Events</div>
+            </div>
+        </div>
+    </div>
+    """
+    st.html(html)
+    
+    st.html('<div style="margin-top: 40px; margin-bottom: 20px; font-weight: 700; text-align: center; color: #8EA4B8; letter-spacing: 2px;">──────────── EVIDENCE TIMELINE ────────────</div>')
+
     for index, event in enumerate(video_result["events"], start=1):
-        st.subheader(f"Evidence event {index} at {event['timestamp_seconds']} seconds")
+        st.html(f'<div style="font-size: 18px; font-weight: 700; margin-top: 30px; margin-bottom: 10px; color: #F4F7FA;">● EVENT {index} <span style="color: #4DA3FF; margin-left: 10px;">{event["timestamp_seconds"]}s</span></div>')
         st.image(event["evidence_path"], use_container_width=True)
+        
         detections = event["detections"]
         severity = calculate_severity(detections, event["width"], event["height"])
         action = recommended_action(severity["level"])
@@ -121,62 +180,243 @@ def video_detection(model, uploaded_file):
             evidence_url=event["evidence_path"],
             recommended_action=action,
         )
-        st.dataframe(detections, use_container_width=True, hide_index=True)
         show_severity(severity, action)
 
 
 def show_incidents():
-    st.markdown('<div class="section-card"><h2>Incident History</h2>', unsafe_allow_html=True)
     incidents = get_all_incidents()
     if not incidents:
-        st.caption("No incidents recorded yet.")
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.html('<div class="section-card"><p>No incidents recorded yet.</p></div>')
         return
+        
     for incident in incidents:
-        with st.expander(f'{incident["incident_id"]} | {incident["severity"]} | {incident["event_class"]}'):
-            st.write(incident)
-            new_status = st.selectbox(
-                "Status",
-                ["PENDING", "ASSIGNED", "CLEARED"],
-                index=["PENDING", "ASSIGNED", "CLEARED"].index(incident["status"]),
-                key=f'status_{incident["incident_id"]}',
-            )
-            if st.button("Update status", key=f'update_{incident["incident_id"]}'):
-                update_incident_status(incident["incident_id"], new_status)
-                st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+        sev_color = "#35E38A"
+        if incident["severity"] == "HIGH": sev_color = "#FF5C64"
+        elif incident["severity"] == "MEDIUM": sev_color = "#FFB62E"
+        
+        status_color = "#35E38A"
+        if incident["status"] == "PENDING": status_color = "#FFB62E"
+        elif incident["status"] == "ASSIGNED": status_color = "#4DA3FF"
+
+        with st.container():
+            st.html(f"""
+            <div class="incident-card" style="border-left: 5px solid {sev_color}">
+                <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
+                    <div style="font-size: 20px; font-weight: 700; color: #F4F7FA;">INCIDENT {incident['incident_id']}</div>
+                    <div style="font-size: 14px; color: #8EA4B8;">{incident['timestamp'].split('.')[0]}</div>
+                </div>
+                
+                <div style="display:flex; justify-content:space-between; margin-bottom: 25px;">
+                    <div>
+                        <div style="color: {sev_color}; font-weight: 700; font-size: 16px;">{incident['severity']} SEVERITY</div>
+                        <div style="font-size: 18px; font-weight: 600; margin-top: 5px;">{incident['event_class']}</div>
+                        <div style="color: #4DA3FF; font-weight: 600;">{incident['confidence']}% confidence</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 18px; font-weight: 600;">{incident['zone_id']}</div>
+                        <div style="color: #8EA4B8; font-size: 14px; margin-top: 5px;">{incident['nearest_landmark']}</div>
+                    </div>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-item" style="color: #F4F7FA;">
+                        <div class="timeline-dot" style="background: #00D9A6;"></div>
+                        DETECTED
+                    </div>
+                    <div class="timeline-line"></div>
+                    <div class="timeline-item" style="color: {'#F4F7FA' if incident['status'] in ['PENDING', 'ASSIGNED', 'CLEARED'] else '#8EA4B8'};">
+                        <div class="timeline-dot" style="background: {'#FFB62E' if incident['status'] in ['PENDING', 'ASSIGNED', 'CLEARED'] else '#13283A'};"></div>
+                        PENDING
+                    </div>
+                    <div class="timeline-line"></div>
+                    <div class="timeline-item" style="color: {'#F4F7FA' if incident['status'] in ['ASSIGNED', 'CLEARED'] else '#8EA4B8'};">
+                        <div class="timeline-dot" style="background: {'#4DA3FF' if incident['status'] in ['ASSIGNED', 'CLEARED'] else '#13283A'};"></div>
+                        ASSIGNED
+                    </div>
+                    <div class="timeline-line"></div>
+                    <div class="timeline-item" style="color: {'#F4F7FA' if incident['status'] == 'CLEARED' else '#8EA4B8'};">
+                        <div class="timeline-dot" style="background: {'#35E38A' if incident['status'] == 'CLEARED' else '#13283A'};"></div>
+                        CLEARED
+                    </div>
+                </div>
+            </div>
+            """)
+            
+            # Use columns for action buttons right under the visual card
+            c1, c2, c3 = st.columns([1,1,2])
+            with c1:
+                new_status = st.selectbox(
+                    "Update Status",
+                    ["PENDING", "ASSIGNED", "CLEARED"],
+                    index=["PENDING", "ASSIGNED", "CLEARED"].index(incident["status"]),
+                    key=f'status_{incident["incident_id"]}',
+                    label_visibility="collapsed"
+                )
+            with c2:
+                if st.button("Apply", key=f'update_{incident["incident_id"]}'):
+                    update_incident_status(incident["incident_id"], new_status)
+                    st.rerun()
 
 
 def main():
     st.set_page_config(page_title="AeroMinds", page_icon="🌿", layout="wide")
-    st.markdown(
-        """
+    st.html("""
         <style>
-        .stApp { background: linear-gradient(135deg, #0f172a, #111827); color: #ffffff; }
-        [data-testid="stHeader"] { background: #0f172a; }
-        .block-container { max-width: 1250px; padding-top: 2rem; }
-        .brand { display: flex; align-items: center; gap: 18px; padding: 0 0 24px; border-bottom: 1px solid #334155; }
-        .brand h1 { margin: 0; color: #ffffff; font-size: 38px; }
-        .brand p { margin: 6px 0 0; color: #94a3b8; }
-        .logo { width: 130px; height: 130px; object-fit: contain; }
-        .section-card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 1rem 1.25rem; margin: 1rem 0; }
-        .section-card h2 { color: #ffffff; margin: 0 0 1rem; }
-        .status-card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 1.2rem; margin: 1rem 0; }
-        .status-pill { display: inline-block; padding: 8px 15px; border-radius: 999px; background: #064e3b; color: #6ee7b7; font-weight: 700; font-size: 13px; }
-        [data-testid="stMetric"] { background: #111827; border: 1px solid #334155; border-radius: 10px; padding: 12px; }
-        [data-testid="stMetricLabel"] { color: #94a3b8; }
-        [data-testid="stMetricValue"] { color: #ffffff; }
-        [data-testid="stFileUploader"] { background: #0f172a; border: 2px dashed #475569; border-radius: 12px; padding: 1rem; }
-        .stButton > button { background: #2563eb; color: #ffffff; border: 0; border-radius: 8px; font-weight: 700; }
-        .stButton > button:hover { background: #1d4ed8; color: #ffffff; }
-        [data-testid="stSidebar"] { background: #0f172a; border-right: 1px solid #334155; }
-        div[data-baseweb="tab-list"] { gap: 8px; }
-        button[data-baseweb="tab"] { color: #cbd5e1; }
-        button[data-baseweb="tab"][aria-selected="true"] { color: #60a5fa; }
-        @media (max-width: 700px) { .logo { width: 92px; height: 92px; } .brand h1 { font-size: 30px; } .brand p { font-size: 13px; } }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap');
+        
+        html, body, [class*="css"]  {
+            font-family: 'Outfit', sans-serif;
+        }
+        
+        .stApp { 
+            background: #07111F;
+            color: #F4F7FA; 
+        }
+        [data-testid="stHeader"] { background: transparent; }
+        .block-container { max-width: 1250px; padding-top: 1rem; }
+        
+        /* HER SECTION */
+        .hero { 
+            padding: 20px 0 30px; 
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+            margin-bottom: 20px;
+        }
+        .hero-top {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 40px;
+        }
+        .hero-logo {
+            display: flex; align-items: center; gap: 15px;
+        }
+        .logo { width: 120px; height: 120px; object-fit: contain; filter: drop-shadow(0 0 15px rgba(0, 217, 166, 0.4)); }
+        .hero-logo h1 { margin: 0; color: #F4F7FA; font-size: 42px; font-weight: 700; }
+        
+        .system-online {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 12px; font-weight: 700; color: #8EA4B8; letter-spacing: 1px;
+        }
+        .online-dot {
+            width: 8px; height: 8px; border-radius: 50%; background: #35E38A;
+            box-shadow: 0 0 10px #35E38A;
+            animation: pulse 1.8s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.35; }
+        }
+        
+        .hero-content {
+            margin-bottom: 20px;
+        }
+        .hero-eyebrow {
+            color: #00D9A6; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;
+        }
+        .hero-headline {
+            font-size: 54px; font-weight: 800; color: #F4F7FA; margin: 0 0 15px; line-height: 1.1;
+        }
+        .hero-sub {
+            font-size: 20px; color: #8EA4B8; max-width: 600px; line-height: 1.5; font-weight: 300;
+        }
+        
+        /* LIVE STRIP */
+        .live-strip {
+            display: flex; justify-content: space-between;
+            background: #0D1B2A; border: 1px solid #13283A; border-radius: 12px; padding: 15px 25px;
+            margin-bottom: 40px;
+        }
+        .strip-item {
+            display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: #F4F7FA;
+        }
+        .strip-value { color: #8EA4B8; font-weight: 400; margin-left: 5px; }
+        .strip-dot { width: 6px; height: 6px; border-radius: 50%; background: #4DA3FF; box-shadow: 0 0 8px #4DA3FF; }
+        
+        /* SECTION CARDS */
+        .section-card { 
+            background: #0D1B2A; 
+            border: 1px solid #13283A; 
+            border-radius: 16px; 
+            padding: 2rem; 
+            margin: 1.5rem 0; 
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .section-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 217, 166, 0.10);
+            border: 1px solid #1c364e;
+        }
+        
+        /* VISUAL COMMAND CENTER */
+        .cmd-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 20px;
+        }
+        .cmd-box { background: #07111F; border: 1px solid #13283A; border-radius: 12px; padding: 25px; }
+        .cmd-title { font-size: 13px; color: #8EA4B8; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 20px; text-align: center; }
+        
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .stat-col { text-align: center; }
+        .stat-val { font-size: 38px; font-weight: 700; }
+        .stat-lab { font-size: 12px; color: #8EA4B8; font-weight: 600; letter-spacing: 1px; }
+        
+        .bar-container { width: 100%; display: flex; gap: 4px; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 15px; }
+        
+        /* UPLOAD DRAG/DROP */
+        [data-testid="stFileUploader"] { 
+            background: #07111F; 
+            border: 2px dashed #13283A; 
+            border-radius: 16px; padding: 2rem; 
+            transition: all 0.3s ease;
+        }
+        [data-testid="stFileUploader"]:hover {
+            border: 2px dashed #00D9A6;
+            background: rgba(0, 217, 166, 0.05);
+        }
+        
+        /* RESULTS & TIMELINES */
+        .styled-table { width: 100%; border-collapse: collapse; background: #0D1B2A; border-radius: 12px; overflow: hidden; border: 1px solid #13283A; }
+        .styled-table td { padding: 15px 20px; border-bottom: 1px solid #13283A; font-size: 15px; }
+        .styled-table tr:last-child td { border-bottom: none; }
+        
+        .analysis-box { background: #0D1B2A; padding: 20px; border-radius: 12px; border: 1px solid #13283A; }
+        
+        /* INCIDENT CARDS */
+        .incident-card {
+            background: #0D1B2A; border: 1px solid #13283A; border-radius: 16px; padding: 25px; margin-bottom: 10px;
+            transition: all 0.3s ease; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .incident-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid #1c364e; }
+        
+        .timeline { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; padding: 0 10px; }
+        .timeline-item { display: flex; flex-direction: column; align-items: center; font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+        .timeline-dot { width: 14px; height: 14px; border-radius: 50%; margin-bottom: 10px; border: 2px solid #0D1B2A; box-shadow: 0 0 0 1px #13283A; }
+        .timeline-line { flex-grow: 1; height: 2px; background: #13283A; margin: 0 15px; transform: translateY(-10px); }
+        
+        /* BUTTONS */
+        .stButton > button { 
+            background: #13283A; color: #F4F7FA; border: 1px solid #1c364e; border-radius: 8px; font-weight: 600; 
+            padding: 0.5rem 1.5rem; transition: all 0.2s ease; width: 100%;
+        }
+        .stButton > button:hover { 
+            background: #00D9A6; color: #07111F; border: 1px solid #00D9A6; transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 217, 166, 0.3);
+        }
+        div[data-testid="stButton"] button p { font-family: 'Outfit', sans-serif; font-size: 15px; }
+        
+        /* TABS */
+        div[data-baseweb="tab-list"] { gap: 15px; background: transparent; padding-bottom: 10px; }
+        button[data-baseweb="tab"] { 
+            color: #8EA4B8; background: transparent; border: none;
+            border-radius: 0; padding: 12px 0; font-weight: 600; font-size: 16px;
+            transition: all 0.2s ease; border-bottom: 2px solid transparent !important;
+        }
+        button[data-baseweb="tab"]:hover { color: #F4F7FA; }
+        button[data-baseweb="tab"][aria-selected="true"] { 
+            color: #00D9A6; border-bottom: 2px solid #00D9A6 !important; background: transparent;
+        }
+        
         </style>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     logo_path = os.path.join("static", "aerominds_logo.png")
@@ -185,42 +425,108 @@ def main():
         with open(logo_path, "rb") as logo_file:
             logo_data = base64.b64encode(logo_file.read()).decode("ascii")
         logo_markup = f'<img class="logo" src="data:image/png;base64,{logo_data}" alt="AeroMinds logo">'
-    st.markdown(
-        f'<div class="brand">{logo_markup}<div><h1>AeroMinds</h1><p>AI-Powered Drone-Based Waste Detection and Smart Sanitation Response</p></div></div>',
-        unsafe_allow_html=True,
+
+    # HERO SECTION (1) & STRIP (3)
+    st.html(
+        f"""
+        <div class="hero">
+            <div class="hero-top">
+                <div class="hero-logo">{logo_markup} <h1>AeroMinds</h1></div>
+                <div class="system-online"><div class="online-dot"></div> SYSTEM ONLINE</div>
+            </div>
+            <div class="hero-content">
+                <div class="hero-eyebrow">AI-Powered Aerial Waste Intelligence</div>
+                <h2 class="hero-headline">Detect • Assess • Respond</h2>
+                <div class="hero-sub">Autonomous aerial intelligence for smarter urban sanitation and real-time environmental protection.</div>
+            </div>
+        </div>
+        <div class="live-strip">
+            <div class="strip-item"><div class="strip-dot"></div> AI MODEL ONLINE <span class="strip-value">YOLOv8 • 3.0M PARAMETERS</span></div>
+            <div class="strip-item"><div class="strip-dot"></div> INFERENCE READY <span class="strip-value">8.1 GFLOPs</span></div>
+            <div class="strip-item"><div class="strip-dot"></div> DETECTION CLASS <span class="strip-value">DUMPING-SITES</span></div>
+        </div>
+        """
     )
 
     model = load_model()
     incidents = get_all_incidents()
-    counts = {
-        "Total Incidents": len(incidents),
-        "High Severity": sum(item["severity"] == "HIGH" for item in incidents),
-        "Medium Severity": sum(item["severity"] == "MEDIUM" for item in incidents),
-        "Low Severity": sum(item["severity"] == "LOW" for item in incidents),
-        "Pending": sum(item["status"] == "PENDING" for item in incidents),
-        "Assigned": sum(item["status"] == "ASSIGNED" for item in incidents),
-        "Cleared": sum(item["status"] == "CLEARED" for item in incidents),
-    }
-    st.markdown('<div class="status-card"><span class="status-pill">AI MODEL ONLINE</span><p><b>Loaded Model:</b> aerominds_dumping_v3.pt</p><p><b>Detected Class:</b> dumping-sites</p></div>', unsafe_allow_html=True)
-    metric_columns = st.columns(7)
-    for column, (label, value) in zip(metric_columns, counts.items()):
-        column.metric(label, value)
+    total = len(incidents)
+    high = sum(1 for item in incidents if item["severity"] == "HIGH")
+    medium = sum(1 for item in incidents if item["severity"] == "MEDIUM")
+    low = sum(1 for item in incidents if item["severity"] == "LOW")
+    pending = sum(1 for item in incidents if item["status"] == "PENDING")
+    assigned = sum(1 for item in incidents if item["status"] == "ASSIGNED")
+    cleared = sum(1 for item in incidents if item["status"] == "CLEARED")
 
-    image_tab, video_tab, history_tab = st.tabs(["Image analysis", "Video analysis", "Incident history"])
+    # COMMAND CENTER (2 & 6)
+    high_pct = (high/total*100) if total > 0 else 0
+    med_pct = (medium/total*100) if total > 0 else 0
+    low_pct = (low/total*100) if total > 0 else 0
+    
+    pend_pct = (pending/total*100) if total > 0 else 0
+    ass_pct = (assigned/total*100) if total > 0 else 0
+    clr_pct = (cleared/total*100) if total > 0 else 0
+
+    st.html(f"""
+    <div class="cmd-grid">
+        <div class="cmd-box">
+            <div class="cmd-title">───── INCIDENT DISTRIBUTION ─────</div>
+            <div class="stat-row">
+                <div class="stat-col"><div class="stat-val">{total}</div><div class="stat-lab">TOTAL</div></div>
+                <div class="stat-col"><div class="stat-val" style="color:#FF5C64;">{high}</div><div class="stat-lab">HIGH</div></div>
+                <div class="stat-col"><div class="stat-val" style="color:#FFB62E;">{medium}</div><div class="stat-lab">MEDIUM</div></div>
+                <div class="stat-col"><div class="stat-val" style="color:#35E38A;">{low}</div><div class="stat-lab">LOW</div></div>
+            </div>
+            <div class="bar-container">
+                <div style="width: {high_pct}%; background: #FF5C64;"></div>
+                <div style="width: {med_pct}%; background: #FFB62E;"></div>
+                <div style="width: {low_pct}%; background: #35E38A;"></div>
+            </div>
+        </div>
+        <div class="cmd-box">
+            <div class="cmd-title">───── RESPONSE STATUS ─────</div>
+            <div class="stat-row">
+                <div class="stat-col"><div class="stat-val" style="color:#FFB62E;">{pending}</div><div class="stat-lab">PENDING</div></div>
+                <div class="stat-col"><div class="stat-val" style="color:#4DA3FF;">{assigned}</div><div class="stat-lab">ASSIGNED</div></div>
+                <div class="stat-col"><div class="stat-val" style="color:#35E38A;">{cleared}</div><div class="stat-lab">CLEARED</div></div>
+            </div>
+            <div class="bar-container">
+                <div style="width: {pend_pct}%; background: #FFB62E;"></div>
+                <div style="width: {ass_pct}%; background: #4DA3FF;"></div>
+                <div style="width: {clr_pct}%; background: #35E38A;"></div>
+            </div>
+        </div>
+    </div>
+    """)
+
+    image_tab, video_tab, history_tab = st.tabs(["[ Analyze Image ]", "[ Analyze Video ]", "[ Timeline ]"])
 
     with image_tab:
-        st.markdown('<div class="section-card"><h2>Upload Aerial Image</h2><p>Upload an aerial or drone image to detect potential dumping sites.</p>', unsafe_allow_html=True)
-        uploaded_image = st.file_uploader("Upload an aerial image", type=["jpg", "jpeg", "png", "webp"])
-        if uploaded_image and st.button("Analyze image", type="primary"):
+        # UPLOAD AREA (4)
+        st.html("""
+        <div style="text-align: center; margin-top: 20px;">
+            <div style="font-weight: 700; color: #8EA4B8; letter-spacing: 2px; text-transform: uppercase;">DRAG & DROP AERIAL IMAGE</div>
+            <div style="font-size: 24px; margin-top: 10px; color: #F4F7FA;">⇧</div>
+            <div style="font-weight: 600; color: #F4F7FA; margin-top: 5px;">Drop image here</div>
+            <div style="font-size: 13px; color: #8EA4B8; margin-top: 5px;">JPG • PNG • WEBP</div>
+        </div>
+        """)
+        uploaded_image = st.file_uploader("", type=["jpg", "jpeg", "png", "webp"], label_visibility="collapsed")
+        if uploaded_image and st.button("⚡ ANALYZE IMAGE"):
             image_detection(model, uploaded_image)
-        st.markdown('</div>', unsafe_allow_html=True)
 
     with video_tab:
-        st.markdown('<div class="section-card"><h2>Upload Aerial Video</h2><p>Upload an aerial/drone video for frame-by-frame dumping-site analysis.</p>', unsafe_allow_html=True)
-        uploaded_video = st.file_uploader("Upload an aerial video", type=["mp4", "avi", "mov", "mkv"])
-        if uploaded_video and st.button("Analyze video", type="primary"):
+        st.html("""
+        <div style="text-align: center; margin-top: 20px;">
+            <div style="font-weight: 700; color: #8EA4B8; letter-spacing: 2px; text-transform: uppercase;">DRAG & DROP AERIAL VIDEO</div>
+            <div style="font-size: 24px; margin-top: 10px; color: #F4F7FA;">⇧</div>
+            <div style="font-weight: 600; color: #F4F7FA; margin-top: 5px;">Drop video here</div>
+            <div style="font-size: 13px; color: #8EA4B8; margin-top: 5px;">MP4 • AVI • MOV</div>
+        </div>
+        """)
+        uploaded_video = st.file_uploader("", type=["mp4", "avi", "mov", "mkv"], label_visibility="collapsed")
+        if uploaded_video and st.button("⚡ ANALYZE VIDEO"):
             video_detection(model, uploaded_video)
-        st.markdown('</div>', unsafe_allow_html=True)
 
     with history_tab:
         show_incidents()
