@@ -47,7 +47,7 @@ VIDEO_EVIDENCE_FOLDER = os.path.join(
 
 MODEL_PATH = os.path.join(
     "models",
-    "aerominds_dumping_v2.pt"
+    "aerominds_dumping_v3.pt"
 )
 
 ALLOWED_IMAGE_EXTENSIONS = {

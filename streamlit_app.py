@@ -201,7 +201,7 @@ def main():
         "Assigned": sum(item["status"] == "ASSIGNED" for item in incidents),
         "Cleared": sum(item["status"] == "CLEARED" for item in incidents),
     }
-    st.markdown('<div class="status-card"><span class="status-pill">AI MODEL ONLINE</span><p><b>Loaded Model:</b> aerominds_dumping_v2.pt</p><p><b>Detected Class:</b> dumping-sites</p></div>', unsafe_allow_html=True)
+    st.markdown('<div class="status-card"><span class="status-pill">AI MODEL ONLINE</span><p><b>Loaded Model:</b> aerominds_dumping_v3.pt</p><p><b>Detected Class:</b> dumping-sites</p></div>', unsafe_allow_html=True)
     metric_columns = st.columns(7)
     for column, (label, value) in zip(metric_columns, counts.items()):
         column.metric(label, value)
