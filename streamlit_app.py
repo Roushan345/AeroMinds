@@ -503,28 +503,28 @@ def main():
 
     with image_tab:
         # UPLOAD AREA (4)
+        uploaded_image = st.file_uploader("", type=["jpg", "jpeg", "png", "webp"], label_visibility="collapsed")
         st.html("""
-        <div style="text-align: center; margin-top: 20px;">
+        <div style="text-align: center; margin-top: 10px;">
             <div style="font-weight: 700; color: #8EA4B8; letter-spacing: 2px; text-transform: uppercase;">DRAG & DROP AERIAL IMAGE</div>
             <div style="font-size: 24px; margin-top: 10px; color: #F4F7FA;">⇧</div>
             <div style="font-weight: 600; color: #F4F7FA; margin-top: 5px;">Drop image here</div>
             <div style="font-size: 13px; color: #8EA4B8; margin-top: 5px;">JPG • PNG • WEBP</div>
         </div>
         """)
-        uploaded_image = st.file_uploader("", type=["jpg", "jpeg", "png", "webp"], label_visibility="collapsed")
         if uploaded_image and st.button("⚡ ANALYZE IMAGE"):
             image_detection(model, uploaded_image)
 
     with video_tab:
+        uploaded_video = st.file_uploader("", type=["mp4", "avi", "mov", "mkv"], label_visibility="collapsed")
         st.html("""
-        <div style="text-align: center; margin-top: 20px;">
+        <div style="text-align: center; margin-top: 10px;">
             <div style="font-weight: 700; color: #8EA4B8; letter-spacing: 2px; text-transform: uppercase;">DRAG & DROP AERIAL VIDEO</div>
             <div style="font-size: 24px; margin-top: 10px; color: #F4F7FA;">⇧</div>
             <div style="font-weight: 600; color: #F4F7FA; margin-top: 5px;">Drop video here</div>
             <div style="font-size: 13px; color: #8EA4B8; margin-top: 5px;">MP4 • AVI • MOV</div>
         </div>
         """)
-        uploaded_video = st.file_uploader("", type=["mp4", "avi", "mov", "mkv"], label_visibility="collapsed")
         if uploaded_video and st.button("⚡ ANALYZE VIDEO"):
             video_detection(model, uploaded_video)
 
