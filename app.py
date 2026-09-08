@@ -47,7 +47,7 @@ VIDEO_EVIDENCE_FOLDER = os.path.join(
 
 MODEL_PATH = os.path.join(
     "models",
-    "aerominds_dumping_v3.pt"
+    "aerominds_dumping_v4.pt"
 )
 
 ALLOWED_IMAGE_EXTENSIONS = {
@@ -580,7 +580,7 @@ def detect_video():
 
             confidence_threshold=0.40,
 
-            frame_skip=10,
+            frame_skip=30,
 
             min_event_gap_seconds=3
         )

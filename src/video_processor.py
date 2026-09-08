@@ -8,7 +8,7 @@ def process_video(
     model,
     evidence_dir,
     confidence_threshold=0.40,
-    frame_skip=10,
+    frame_skip=30,
     min_event_gap_seconds=3
 ):
     """

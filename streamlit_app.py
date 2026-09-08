@@ -11,7 +11,7 @@ from src.severity import calculate_severity, recommended_action
 from src.video_processor import process_video
 
 
-MODEL_PATH = os.path.join("models", "aerominds_dumping_v2.pt")
+MODEL_PATH = os.path.join("models", "aerominds_dumping_v4.pt")
 CONFIDENCE_THRESHOLD = 0.40
 
 
@@ -131,7 +131,7 @@ def video_detection(model, uploaded_file):
                 model=model,
                 evidence_dir=evidence_dir,
                 confidence_threshold=CONFIDENCE_THRESHOLD,
-                frame_skip=10,
+                frame_skip=30,
                 min_event_gap_seconds=3,
             )
     finally:
